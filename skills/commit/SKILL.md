@@ -6,7 +6,7 @@ argument-hint: "[/git:chamado <n>] [/git:main] [/gitlab:mr [@revisor|@auto] [dra
 
 # git:commit
 
-O hook `git-guard` do plugin valida tudo abaixo. Se ele negar, corrija a mensagem, nunca contorne.
+Os hooks do plugin (`[git:<regra>]`, um por regra) validam tudo abaixo. Se algum negar, corrija a mensagem, nunca contorne.
 
 ## Modificadores (nos argumentos)
 

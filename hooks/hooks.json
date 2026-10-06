@@ -7,16 +7,65 @@
           {
             "type": "command",
             "if": "Bash(git commit *)",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/guard.js\" commit",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/commit-message-readable.ts\"",
             "timeout": 10,
-            "statusMessage": "git-guard: validando commit"
+            "statusMessage": "git:commit-message-readable: mensagem legível"
+          },
+          {
+            "type": "command",
+            "if": "Bash(git commit *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/semantic-title.ts\"",
+            "timeout": 10,
+            "statusMessage": "git:semantic-title: título semântico"
+          },
+          {
+            "type": "command",
+            "if": "Bash(git commit *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/title-length.ts\"",
+            "timeout": 10,
+            "statusMessage": "git:title-length: tamanho do título"
+          },
+          {
+            "type": "command",
+            "if": "Bash(git commit *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/single-item-commit.ts\"",
+            "timeout": 10,
+            "statusMessage": "git:single-item-commit: um assunto por commit"
+          },
+          {
+            "type": "command",
+            "if": "Bash(git commit *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/commit-body.ts\"",
+            "timeout": 10,
+            "statusMessage": "git:commit-body: body obrigatório"
+          },
+          {
+            "type": "command",
+            "if": "Bash(git commit *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/no-co-author.ts\"",
+            "timeout": 10,
+            "statusMessage": "git:no-co-author: sem co-author"
+          },
+          {
+            "type": "command",
+            "if": "Bash(git commit *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/ticket-scope.ts\"",
+            "timeout": 10,
+            "statusMessage": "git:ticket-scope: escopo do chamado"
+          },
+          {
+            "type": "command",
+            "if": "Bash(git commit *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/protected-branch-commit.ts\"",
+            "timeout": 10,
+            "statusMessage": "git:protected-branch-commit: commit na main"
           },
           {
             "type": "command",
             "if": "Bash(git push *)",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/guard.js\" push",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/protected-branch-push.ts\"",
             "timeout": 10,
-            "statusMessage": "git-guard: validando push"
+            "statusMessage": "git:protected-branch-push: push na main"
           }
         ]
       }
@@ -28,8 +77,9 @@
           {
             "type": "command",
             "if": "Bash(git commit *)",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/guard.js\" audit",
-            "timeout": 10
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/main-audit.ts\"",
+            "timeout": 10,
+            "statusMessage": "git:main-audit: auditoria da main"
           }
         ]
       }

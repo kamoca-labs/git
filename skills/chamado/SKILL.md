@@ -6,7 +6,7 @@ argument-hint: "<numero> [/git:commit|/gitlab:mr] [descrição]"
 
 # git:chamado
 
-O primeiro argumento é o número do chamado. O hook `git-guard` exige que o escopo seja esse número sempre que `/git:chamado <n>` estiver no prompt.
+O primeiro argumento é o número do chamado. O hook `ticket-scope` exige que o escopo seja esse número sempre que `/git:chamado <n>` estiver no prompt.
 
 - **Com `/git:commit` nos argumentos**: invoque a skill `git:commit` (Skill tool) usando `<n>` como escopo de todos os commits.
 - **Com `/gitlab:mr` nos argumentos**: invoque a skill `gitlab:mr` (Skill tool) com `<n>` como escopo do título e cite o chamado em "Referências".

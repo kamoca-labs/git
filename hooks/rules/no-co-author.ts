@@ -1,0 +1,9 @@
+import { commitMessage, deny, readInput } from '../lib.ts'
+
+const ATTRIBUTION = /co-authored-by|generated with \[?claude/i
+
+const message = commitMessage(readInput())
+
+if (message && ATTRIBUTION.test(message.full)) {
+  deny('no-co-author', 'Co-author/atribuição não é permitida. Remova a linha.')
+}

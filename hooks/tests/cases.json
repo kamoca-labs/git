@@ -1,0 +1,128 @@
+[
+  {
+    "description": "commit simples em branch passa por todas as regras",
+    "origin": "usage",
+    "branch": "feat/x",
+    "prompt": "/git:commit",
+    "tool_name": "Bash",
+    "tool_input": { "command": "git commit -F - <<'EOF'\nfix(upload): reject files above the size limit\n\nPor quê: anexos acima de 10 MB travavam a fila de processamento.\nO que: valida o tamanho antes de enfileirar e devolve 422.\nEOF" },
+    "deny": []
+  },
+  {
+    "description": "commit com -m duplo (título e body) passa",
+    "origin": "usage",
+    "branch": "feat/x",
+    "prompt": "/git:commit",
+    "tool_name": "Bash",
+    "tool_input": { "command": "git commit -m \"fix: handle null owner\" -m \"Por quê: setor sem dono quebrava a listagem.\"" },
+    "deny": []
+  },
+  {
+    "description": "commit amarrado ao chamado passa",
+    "origin": "usage",
+    "branch": "fix/19738-upload",
+    "prompt": "<command-name>/git:commit</command-name>\n<command-args>/git:chamado 19738</command-args>",
+    "tool_name": "Bash",
+    "tool_input": { "command": "git commit -F - <<'EOF'\nfix(19738): reject files above the size limit\n\nPor quê: anexos acima de 10 MB travavam a fila.\nO que: valida o tamanho antes de enfileirar.\nEOF" },
+    "deny": []
+  },
+  {
+    "description": "chamado informado com escopo errado",
+    "origin": "usage",
+    "branch": "fix/19738-upload",
+    "prompt": "/git:chamado 19738 /git:commit",
+    "tool_name": "Bash",
+    "tool_input": { "command": "git commit -F - <<'EOF'\nfix(upload): reject files above the size limit\n\nPor quê: anexos acima de 10 MB travavam a fila.\nO que: valida o tamanho antes de enfileirar.\nEOF" },
+    "deny": ["ticket-scope"]
+  },
+  {
+    "description": "título com conjunção e sem body viola duas regras de uma vez",
+    "origin": "usage",
+    "branch": "feat/x",
+    "prompt": "/git:commit",
+    "tool_name": "Bash",
+    "tool_input": { "command": "git commit -m \"feat: add export and import\"" },
+    "deny": ["single-item-commit", "commit-body"]
+  },
+  {
+    "description": "título fora do padrão semântico",
+    "origin": "usage",
+    "branch": "feat/x",
+    "prompt": "/git:commit",
+    "tool_name": "Bash",
+    "tool_input": { "command": "git commit -F - <<'EOF'\natualiza README\n\nPor quê: o passo de instalação estava desatualizado.\nEOF" },
+    "deny": ["semantic-title"]
+  },
+  {
+    "description": "trailer de co-author",
+    "origin": "usage",
+    "branch": "feat/x",
+    "prompt": "/git:commit",
+    "tool_name": "Bash",
+    "tool_input": { "command": "git commit -F - <<'EOF'\nfeat: add endpoint\n\nPor quê: o front precisa listar setores.\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF" },
+    "deny": ["no-co-author"]
+  },
+  {
+    "description": "commit sem mensagem abriria o editor",
+    "origin": "usage",
+    "branch": "feat/x",
+    "prompt": "/git:commit",
+    "tool_name": "Bash",
+    "tool_input": { "command": "git commit" },
+    "deny": ["commit-message-readable"]
+  },
+  {
+    "description": "commit na main sem /git:main",
+    "origin": "usage",
+    "branch": "main",
+    "prompt": "/git:commit",
+    "tool_name": "Bash",
+    "tool_input": { "command": "git commit -F - <<'EOF'\nfix: restore login\n\nPor quê: produção fora do ar.\nO que: troca o certificado vencido.\nEOF" },
+    "deny": ["protected-branch-commit"]
+  },
+  {
+    "description": "hotfix na main com /git:main e trailers passa",
+    "origin": "usage",
+    "branch": "main",
+    "prompt": "<command-name>/git:commit</command-name>\n<command-args>/git:main</command-args>",
+    "tool_name": "Bash",
+    "tool_input": { "command": "git commit -F - <<'EOF'\nfix: restore login after expired certificate\n\nPor quê: produção fora do ar, sem tempo para ciclo de MR.\nO que: troca o certificado vencido pelo renovado.\n\nMain-Justification: incidente em produção\nMain-Risk: sem revisão; reverter com git revert\nEOF" },
+    "deny": []
+  },
+  {
+    "description": "/git:main sem os trailers",
+    "origin": "usage",
+    "branch": "main",
+    "prompt": "/git:commit /git:main",
+    "tool_name": "Bash",
+    "tool_input": { "command": "git commit -F - <<'EOF'\nfix: restore login\n\nPor quê: produção fora do ar, sem tempo para MR.\nEOF" },
+    "deny": ["protected-branch-commit"]
+  },
+  {
+    "description": "push da branch de trabalho passa",
+    "origin": "usage",
+    "branch": "feat/x",
+    "prompt": "/git:commit",
+    "tool_name": "Bash",
+    "tool_input": { "command": "git push -u origin HEAD" },
+    "deny": []
+  },
+  {
+    "description": "push para a main a partir de outra branch",
+    "origin": "usage",
+    "branch": "feat/x",
+    "prompt": "/git:commit",
+    "tool_name": "Bash",
+    "tool_input": { "command": "git push origin HEAD:main" },
+    "deny": ["protected-branch-push"]
+  },
+  {
+    "description": "comando com $VAR disparou o hook pelo if best-effort sem ser commit",
+    "origin": "real 2026-10-06",
+    "branch": "main",
+    "prompt": "/git:commit",
+    "tool_name": "Bash",
+    "tool_input": { "command": "d=/tmp/live; rm -rf $d; mkdir -p $d && git -C $d init -q -b feat/x" },
+    "deny": []
+  }
+]

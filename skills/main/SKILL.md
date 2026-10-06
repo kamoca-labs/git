@@ -12,4 +12,4 @@ Esta skill só autoriza. Quem executa é o `/git:commit`.
 - **Com `/git:commit` nos argumentos**: invoque a skill `git:commit` (Skill tool), seção "Commit na main".
 - **Sozinho**: não faça nada. Explique que o uso é `/git:commit /git:main` ou `/git:main /git:commit`.
 
-Antes de commitar, mostre ao usuário a justificativa e o risco que vão no body e espere a confirmação. O hook `git-guard` só libera a main quando `/git:main` está no prompt digitado e o body traz `Main-Justification:` e `Main-Risk:`. Cada commit liberado fica em `~/.claude/git-main-audit.log`.
+`/git:main` no prompt já é a autorização: escreva a justificativa e o risco no body e commite sem pedir confirmação. Os hooks `protected-branch-commit` e `protected-branch-push` só liberam a main quando `/git:main` está no prompt digitado e o body traz `Main-Justification:` e `Main-Risk:`. O hook `main-audit` registra cada commit liberado em `~/.claude/git-main-audit.log`.
