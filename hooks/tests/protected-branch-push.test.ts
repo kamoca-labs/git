@@ -21,3 +21,12 @@ test('com /git:main, push na main passa', () => {
   prompt('/git:commit /git:main')
   allowed(run(RULE, 'git push origin HEAD'))
 })
+
+test('push só de tag passa, mesmo na main', () => {
+  allowed(sandbox('main').run(RULE, 'git push origin refs/tags/v1.2.0'))
+})
+
+test('tag junto com branch na main continua negado', () => {
+  denied(sandbox('main').run(RULE, 'git push origin refs/tags/v1.2.0 HEAD'), /git:main/)
+  denied(sandbox('main').run(RULE, 'git push --follow-tags origin refs/tags/v1.2.0 main'), /git:main/)
+})
