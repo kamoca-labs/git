@@ -30,6 +30,8 @@ Commits semânticos, atômicos e explicados, sempre em branch dedicada. Cada reg
 | `/git:commit` | `[/git:chamado <n>] [/git:main] [/gitlab:mr ...] [instruções]` | Lê o diff e a conversa, agrupa por assunto, commita com body e faz push. Na main sem `/git:main`, cria uma branch antes |
 | `/git:chamado` | `<n> [/git:commit\|/gitlab:mr] [descrição]` | Com outro comando, o número vira o escopo. Sozinho, cria `<tipo>/<n>-<assunto>` a partir da branch padrão atualizada |
 | `/git:main` | `/git:commit [...]` | Só autoriza. O Claude não consegue invocá-lo sozinho (`disable-model-invocation`) |
+| `/git:split` | `[branch] [/gitlab:mr ...]` | Quebra a branch em branches encadeadas, uma por assunto, conferindo que a soma reproduz a original. A original fica intacta |
+| `/git:desfazer` | `[commit\|amend\|rebase\|merge\|reset\|branch <nome>]` | Desfaz pelo reflog, com branch de backup antes; em branch compartilhada usa `revert` |
 
 ## Regras
 
@@ -45,7 +47,7 @@ Disparam em `git commit` e `git push` feitos pelo Claude. O `git` digitado por v
 | `no-co-author` | commit | sem `Co-Authored-By` nem "Generated with Claude" | trailer de co-author |
 | `ticket-scope` | commit | com `/git:chamado <n>`, o escopo é `(<n>)` | `feat(api): ...` com `/git:chamado 19738` |
 | `protected-branch-commit` | commit | na `main`/`master`, só com `/git:main` e os trailers | commit na main sem autorização |
-| `protected-branch-push` | push | push para `main`/`master` só com `/git:main` | `git push origin HEAD:main` |
+| `protected-branch-push` | push | push para `main`/`master` só com `/git:main`; push só de tag (`refs/tags/...`) passa | `git push origin HEAD:main` |
 | `main-audit` | depois do commit | registra cada commit feito na main | (não nega) |
 
 ## Commit na main
@@ -70,6 +72,8 @@ git log --grep 'Main-Risk:'
 | `skills/commit/SKILL.md` | passos e formato do commit |
 | `skills/chamado/SKILL.md` | modificador e criação da branch do chamado |
 | `skills/main/SKILL.md` | autorização da main |
+| `skills/split/SKILL.md` | divisão da branch em partes encadeadas |
+| `skills/desfazer/SKILL.md` | recuperação pelo reflog, caso a caso |
 | `hooks/hooks.json` | um hook por regra, com `if:` e `statusMessage` próprios |
 | `hooks/lib.ts` | leitura do payload, extração da mensagem, leitura do prompt (`/git:main`, `/git:chamado`) |
 | `hooks/rules/<regra>.ts` | uma regra por arquivo |
