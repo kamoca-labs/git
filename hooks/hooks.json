@@ -1,0 +1,38 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git commit *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/guard.js\" commit",
+            "timeout": 10,
+            "statusMessage": "git-guard: validando commit"
+          },
+          {
+            "type": "command",
+            "if": "Bash(git push *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/guard.js\" push",
+            "timeout": 10,
+            "statusMessage": "git-guard: validando push"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git commit *)",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/guard.js\" audit",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
