@@ -14,7 +14,7 @@
 
 ```bash
 claude plugin marketplace add ~/Development/claude-plugins
-claude plugin install git@kauan
+claude plugin install git@kamoca
 ```
 
 Requer Node 22.18+. Os comandos aparecem na próxima sessão. Clone e atualização estão no [README do repo](../../README.md#instalação).
