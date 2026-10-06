@@ -30,6 +30,7 @@ Commits semânticos, atômicos e explicados, sempre em branch dedicada. Cada reg
 | `/git:commit` | `[/git:chamado <n>] [/git:main] [/gitlab:mr ...] [instruções]` | Lê o diff e a conversa, agrupa por assunto, commita com body e faz push. Na main sem `/git:main`, cria uma branch antes |
 | `/git:chamado` | `<n> [/git:commit\|/gitlab:mr] [descrição]` | Com outro comando, o número vira o escopo. Sozinho, cria `<tipo>/<n>-<assunto>` a partir da branch padrão atualizada |
 | `/git:main` | `/git:commit [...]` | Só autoriza. O Claude não consegue invocá-lo sozinho (`disable-model-invocation`) |
+| `/git:sync` | `[branch]` | Mergeada: volta para a branch padrão atualizada e apaga a local com `-d`. Não mergeada: fica nela e faz `pull`. Limpa outras branches já mergeadas |
 | `/git:split` | `[branch] [/gitlab:mr ...]` | Quebra a branch em branches encadeadas, uma por assunto, conferindo que a soma reproduz a original. A original fica intacta |
 | `/git:desfazer` | `[commit\|amend\|rebase\|merge\|reset\|branch <nome>]` | Desfaz pelo reflog, com branch de backup antes; em branch compartilhada usa `revert` |
 
@@ -72,6 +73,7 @@ git log --grep 'Main-Risk:'
 | `skills/commit/SKILL.md` | passos e formato do commit |
 | `skills/chamado/SKILL.md` | modificador e criação da branch do chamado |
 | `skills/main/SKILL.md` | autorização da main |
+| `skills/sync/SKILL.md` | volta para a padrão depois do merge e limpa as branches |
 | `skills/split/SKILL.md` | divisão da branch em partes encadeadas |
 | `skills/desfazer/SKILL.md` | recuperação pelo reflog, caso a caso |
 | `hooks/hooks.json` | um hook por regra, com `if:` e `statusMessage` próprios |
