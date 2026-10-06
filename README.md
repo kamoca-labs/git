@@ -27,11 +27,10 @@ Commits semânticos, atômicos e explicados, sempre em branch dedicada. Cada reg
 
 | Comando | Argumentos | O que faz |
 |---|---|---|
-| `/git:commit` | `[/git:chamado <n>] [/git:main] [/gitlab:mr ...] [instruções]` | Lê o diff e a conversa, agrupa por assunto, commita com body e faz push. Na main sem `/git:main`, cria uma branch antes |
-| `/git:chamado` | `<n> [/git:commit\|/gitlab:mr] [descrição]` | Com outro comando, o número vira o escopo. Sozinho, cria `<tipo>/<n>-<assunto>` a partir da branch padrão atualizada |
+| `/git:commit` | `[/git:main] [/<plugin>:<comando> ...] [instruções]` | Lê o diff e a conversa, agrupa por assunto, commita com body e faz push. Na main sem `/git:main`, cria uma branch antes. Comando de outro plugin nos argumentos roda depois do push |
 | `/git:main` | `/git:commit [...]` | Só autoriza. O Claude não consegue invocá-lo sozinho (`disable-model-invocation`) |
 | `/git:sync` | `[branch]` | Mergeada: volta para a branch padrão atualizada e apaga a local com `-d`. Não mergeada: fica nela e faz `pull`. Limpa outras branches já mergeadas |
-| `/git:split` | `[branch] [/gitlab:mr ...]` | Quebra a branch em branches encadeadas, uma por assunto, conferindo que a soma reproduz a original. A original fica intacta |
+| `/git:split` | `[branch] [/<plugin>:<comando> ...]` | Quebra a branch em branches encadeadas, uma por assunto, conferindo que a soma reproduz a original. A original fica intacta |
 | `/git:desfazer` | `[commit\|amend\|rebase\|merge\|reset\|branch <nome>]` | Desfaz pelo reflog, com branch de backup antes; em branch compartilhada usa `revert` |
 
 ## Regras
@@ -46,7 +45,6 @@ Disparam em `git commit` e `git push` feitos pelo Claude. O `git` digitado por v
 | `single-item-commit` | commit | sem `e`, `and`, `&` ou `+` no título (literal entre crases não conta) | `feat: add endpoint and fix login` |
 | `commit-body` | commit | body de 30 a 1000 chars, linhas de até 100 | só o título |
 | `no-co-author` | commit | sem `Co-Authored-By` nem "Generated with Claude" | trailer de co-author |
-| `ticket-scope` | commit | com `/git:chamado <n>`, o escopo é `(<n>)` | `feat(api): ...` com `/git:chamado 19738` |
 | `protected-branch-commit` | commit | na `main`/`master`, só com `/git:main` e os trailers | commit na main sem autorização |
 | `protected-branch-push` | push | push para `main`/`master` só com `/git:main`; push só de tag (`refs/tags/...`) passa | `git push origin HEAD:main` |
 | `main-audit` | depois do commit | registra cada commit feito na main | (não nega) |
@@ -56,7 +54,7 @@ Disparam em `git commit` e `git push` feitos pelo Claude. O `git` digitado por v
 Exige `/git:main` no **seu** prompt e dois trailers no body:
 
 ```
-Main-Justification: por que não dá para passar por branch e MR
+Main-Justification: por que não dá para passar por branch e PR/MR
 Main-Risk: o que pode quebrar e como reverter
 ```
 
@@ -71,13 +69,12 @@ git log --grep 'Main-Risk:'
 | Caminho | Papel |
 |---|---|
 | `skills/commit/SKILL.md` | passos e formato do commit |
-| `skills/chamado/SKILL.md` | modificador e criação da branch do chamado |
 | `skills/main/SKILL.md` | autorização da main |
 | `skills/sync/SKILL.md` | volta para a padrão depois do merge e limpa as branches |
 | `skills/split/SKILL.md` | divisão da branch em partes encadeadas |
 | `skills/desfazer/SKILL.md` | recuperação pelo reflog, caso a caso |
 | `hooks/hooks.json` | um hook por regra, com `if:` e `statusMessage` próprios |
-| `hooks/lib.ts` | leitura do payload, extração da mensagem, leitura do prompt (`/git:main`, `/git:chamado`) |
+| `hooks/lib.ts` | leitura do payload, extração da mensagem, leitura do prompt (`/git:main`) |
 | `hooks/rules/<regra>.ts` | uma regra por arquivo |
 | `hooks/tests/<regra>.test.ts` | os casos de cada regra, isolada |
 | `hooks/tests/cases.json` | casos de uso de ponta a ponta: cada um passa por **todos** os hooks e declara quais regras negam |

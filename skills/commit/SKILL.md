@@ -1,7 +1,7 @@
 ---
 name: commit
-description: Commita as mudanças pendentes em commits semânticos atômicos, com body explicando por quê e o quê, sempre em branch dedicada, e faz push. Aceita nos argumentos os modificadores /git:chamado <n>, /git:main e /gitlab:mr [@revisor].
-argument-hint: "[/git:chamado <n>] [/git:main] [/gitlab:mr [@revisor|@auto] [draft]] [instruções]"
+description: Commita as mudanças pendentes em commits semânticos atômicos, com body explicando por quê e o quê, sempre em branch dedicada, e faz push. Aceita nos argumentos o modificador /git:main e um comando de outro plugin para rodar depois do push.
+argument-hint: "[/git:main] [/<plugin>:<comando> ...] [instruções]"
 ---
 
 # git:commit
@@ -10,16 +10,15 @@ Os hooks do plugin (`[git:<regra>]`, um por regra) validam tudo abaixo. Se algum
 
 ## Modificadores (nos argumentos)
 
-- `/git:chamado <n>`: escopo de todo commit é o número, `feat(19738): ...`.
 - `/git:main`: autoriza commit e push na main. Sem ele, o hook nega.
-- `/gitlab:mr ...`: ao terminar o push, invoque a skill `gitlab:mr` (Skill tool), repassando os argumentos.
+- `/<plugin>:<comando> ...` de outro plugin (abrir PR/MR, por exemplo): ao terminar o push, invoque essa skill (Skill tool), repassando os argumentos que vêm depois dela.
 
 ## Passos
 
 1. `git status`, `git diff` e `git log -10 --oneline`. Siga o idioma e o estilo de escopo que o repo já usa.
 2. Leia a conversa para entender **por quê** a mudança existe. O body registra isso, o diff já mostra o como.
 3. Branch:
-   - na main/master sem `/git:main`: `git switch -c <tipo>/<chamado->-<assunto-kebab>` antes de commitar;
+   - na main/master sem `/git:main`: `git switch -c <tipo>/<assunto-kebab>` antes de commitar;
    - na main com `/git:main`: siga a seção "Commit na main".
 4. Agrupe as mudanças por assunto: **um assunto por commit**. Use `git add <caminhos>` explícito, nunca `git add -A` às cegas.
 5. Commit sempre neste formato:
@@ -47,7 +46,7 @@ EOF
 Só com `/git:main` no prompt do usuário. O body leva dois trailers obrigatórios:
 
 ```
-Main-Justification: por que não dá para passar por branch e MR
+Main-Justification: por que não dá para passar por branch e PR/MR
 Main-Risk: o que pode quebrar e como reverter
 ```
 

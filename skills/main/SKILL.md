@@ -1,7 +1,7 @@
 ---
 name: main
 description: Autoriza, de forma explícita e auditada, commit e push direto na main. Só vale combinado com /git:commit, exige justificativa e riscos no body.
-argument-hint: "/git:commit [/git:chamado <n>] [instruções]"
+argument-hint: "/git:commit [instruções]"
 disable-model-invocation: true
 ---
 

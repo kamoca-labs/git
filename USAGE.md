@@ -3,9 +3,7 @@
 ## Sumário
 
 - [Commitar o que está pendente](#commitar-o-que-está-pendente)
-- [Começar o trabalho de um chamado](#começar-o-trabalho-de-um-chamado)
-- [Commitar amarrado ao chamado](#commitar-amarrado-ao-chamado)
-- [Commitar e abrir o MR de uma vez](#commitar-e-abrir-o-mr-de-uma-vez)
+- [Commitar e encadear outro comando](#commitar-e-encadear-outro-comando)
 - [Dar instruções extras](#dar-instruções-extras)
 - [Hotfix direto na main](#hotfix-direto-na-main)
 - [Quando o hook nega](#quando-o-hook-nega)
@@ -28,33 +26,13 @@ O que: valida o tamanho antes de enfileirar e devolve 422 com a mensagem.
 
 Se você estiver na main, ele cria uma branch (`fix/rejeitar-anexo-grande`) antes de commitar.
 
-## Começar o trabalho de um chamado
+## Commitar e encadear outro comando
 
 ```
-/git:chamado 19738 corrigir upload de anexo
+/git:commit /<plugin>:<comando> @fulano
 ```
 
-Com o working tree limpo, ele atualiza a branch padrão e cria `fix/19738-corrigir-upload-de-anexo`. Se faltar a descrição, ele pergunta.
-
-## Commitar amarrado ao chamado
-
-```
-/git:commit /git:chamado 19738
-```
-
-Todos os commits saem com o escopo do chamado:
-
-```
-fix(19738): reject files above the size limit
-```
-
-## Commitar e abrir o MR de uma vez
-
-```
-/git:commit /git:chamado 19738 /gitlab:mr @fulano
-```
-
-Faz os commits e o push, depois invoca o `gitlab:mr` com o revisor. Os casos do MR estão em [plugins/gitlab/USAGE.md](../gitlab/USAGE.md).
+Faz os commits e o push, depois invoca o comando do outro plugin com o resto dos argumentos (abrir o PR/MR com revisor, por exemplo). O `git` não depende de nenhum plugin: qualquer um instalado serve.
 
 ## Dar instruções extras
 
@@ -77,7 +55,7 @@ Tudo que não é modificador vira instrução:
 ```
 fix: restore login after expired certificate
 
-Por quê: produção fora do ar, sem tempo para ciclo de MR.
+Por quê: produção fora do ar, sem tempo para ciclo de PR/MR.
 O que: troca o certificado vencido pelo renovado.
 
 Main-Justification: incidente em produção, login indisponível para todos
@@ -100,7 +78,6 @@ O Claude recebe `[git:<regra>] motivo` (todas as regras violadas de uma vez), co
 | `Body obrigatório` | `fix: typo` sem body | body com por quê e o quê |
 | `Linha do body acima de 100 chars` | parágrafo numa linha | quebre a linha |
 | `Co-author/atribuição não é permitida` | `Co-Authored-By: ...` | remova o trailer |
-| `Com /git:chamado o escopo deve ser o chamado` | `fix(api): ...` | `fix(19738): ...` |
 | `Commit direto na main só com /git:main` | commit na main | crie uma branch ou use `/git:main` |
 | `Mensagem não encontrada` | `git commit` sem `-m` | `git commit -F - <<'EOF' ... EOF` |
 

@@ -1,7 +1,7 @@
 ---
 name: split
-description: Quebra uma branch grande em branches menores e encadeadas, uma por assunto, cada uma pronta para um MR pequeno. A branch original fica intacta.
-argument-hint: "[branch] [/gitlab:mr [@revisor|@auto]]"
+description: Quebra uma branch grande em branches menores e encadeadas, uma por assunto, cada uma pronta para um PR/MR pequeno. A branch original fica intacta.
+argument-hint: "[branch] [/<plugin>:<comando> ...]"
 ---
 
 # git:split
@@ -27,5 +27,5 @@ A branch original **nunca** é alterada nem apagada: ela é o backup. Tudo sai e
    Arquivo que entra em mais de uma parte: aplique só os hunks da parte com `git diff <base> <branch> -- <arquivo>` num arquivo temporário (`mktemp`), edite o patch e `git apply`.
 6. Confira que a última parte reproduz a original: `git diff <última-parte> <branch>` tem que sair vazio. Se não sair, mostre o que falta e corrija antes de seguir.
 7. `git push -u origin <parte>` para cada uma.
-8. Com `/gitlab:mr` nos argumentos, invoque a skill `gitlab:mr` (Skill tool) para cada parte, na ordem, com `alvo:<parte-anterior>` (a primeira mira a branch padrão). Cite na descrição de cada MR o MR anterior em "Referências".
-9. Devolva a cadeia (`parte 1 ← parte 2 ← ...`) e lembre que o merge vai na ordem: depois do merge da parte 1, o GitLab retarget a parte 2 sozinho se a branch da 1 for removida.
+8. Com um comando de outro plugin nos argumentos (abrir PR/MR, por exemplo), invoque essa skill (Skill tool) para cada parte, na ordem, mirando a parte anterior (a primeira mira a branch padrão). Peça para citar o PR/MR anterior na descrição de cada um.
+9. Devolva a cadeia (`parte 1 ← parte 2 ← ...`) e lembre que o merge vai na ordem: depois do merge da parte 1, GitHub e GitLab redirecionam a parte 2 para a branch padrão sozinhos se a branch da 1 for removida.

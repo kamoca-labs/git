@@ -49,13 +49,6 @@
           {
             "type": "command",
             "if": "Bash(git commit *)",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/ticket-scope.ts\"",
-            "timeout": 10,
-            "statusMessage": "git:ticket-scope: escopo do chamado"
-          },
-          {
-            "type": "command",
-            "if": "Bash(git commit *)",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/protected-branch-commit.ts\"",
             "timeout": 10,
             "statusMessage": "git:protected-branch-commit: commit na main"

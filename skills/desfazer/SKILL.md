@@ -25,7 +25,7 @@ Nada se perde enquanto existir referência para o commit. Por isso: **backup pri
 | arquivo apagado ou alterado | `git restore --source=<hash> -- <arquivo>` |
 
 6. **Já foi pushado?** Confira com `git branch -r --contains <commit desfeito>`:
-   - branch compartilhada (main, ou branch com MR que outra pessoa revisa): não reescreva. Use `git revert <hash>` e faça push normal;
+   - branch compartilhada (main, ou branch com PR/MR que outra pessoa revisa): não reescreva. Use `git revert <hash>` e faça push normal;
    - branch só sua: depois do reset, `git push --force-with-lease`. **Pergunte antes**: isso reescreve o remoto.
 7. Mostre o resultado (`git log -5 --oneline`, `git status`) e diga o nome da branch de backup. Ela pode ser apagada com `git branch -D <backup>` quando estiver tudo certo.
 

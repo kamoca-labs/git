@@ -35,7 +35,7 @@ export function sandbox(branch = 'feat/x'): Sandbox {
   const prompt = (text: string) => {
     const entries = [
       { type: 'user', message: { role: 'user', content: text } },
-      { type: 'user', message: { role: 'user', content: [{ type: 'text', text: 'skill /git:main /git:chamado 1' }] } },
+      { type: 'user', message: { role: 'user', content: [{ type: 'text', text: 'skill /git:main' }] } },
     ]
     fs.writeFileSync(transcript, entries.map((entry) => JSON.stringify(entry)).join('\n'))
   }

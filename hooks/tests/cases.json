@@ -18,24 +18,6 @@
     "deny": []
   },
   {
-    "description": "commit amarrado ao chamado passa",
-    "origin": "usage",
-    "branch": "fix/19738-upload",
-    "prompt": "<command-name>/git:commit</command-name>\n<command-args>/git:chamado 19738</command-args>",
-    "tool_name": "Bash",
-    "tool_input": { "command": "git commit -F - <<'EOF'\nfix(19738): reject files above the size limit\n\nPor quê: anexos acima de 10 MB travavam a fila.\nO que: valida o tamanho antes de enfileirar.\nEOF" },
-    "deny": []
-  },
-  {
-    "description": "chamado informado com escopo errado",
-    "origin": "usage",
-    "branch": "fix/19738-upload",
-    "prompt": "/git:chamado 19738 /git:commit",
-    "tool_name": "Bash",
-    "tool_input": { "command": "git commit -F - <<'EOF'\nfix(upload): reject files above the size limit\n\nPor quê: anexos acima de 10 MB travavam a fila.\nO que: valida o tamanho antes de enfileirar.\nEOF" },
-    "deny": ["ticket-scope"]
-  },
-  {
     "description": "título com conjunção e sem body viola duas regras de uma vez",
     "origin": "usage",
     "branch": "feat/x",

@@ -129,7 +129,3 @@ function lastUserPrompt(transcriptPath?: string, { raw = false } = {}): string {
 export function isMainAllowed({ transcript_path }: HookInput): boolean {
   return /(^|\s)\/git:main\b/.test(lastUserPrompt(transcript_path))
 }
-
-export function ticket({ transcript_path }: HookInput): string | null {
-  return lastUserPrompt(transcript_path).match(/(^|\s)\/git:chamado\s+(\d+)/)?.[2] ?? null
-}
