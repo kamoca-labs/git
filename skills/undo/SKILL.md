@@ -1,10 +1,10 @@
 ---
-name: desfazer
+name: undo
 description: Desfaz com segurança o último commit, um amend, rebase, merge ou reset errado, ou recupera branch apagada, usando o reflog. Sempre cria uma branch de backup antes de mexer.
 argument-hint: "[commit|amend|rebase|merge|reset|branch <nome>] [descrição do que deu errado]"
 ---
 
-# git:desfazer
+# git:undo
 
 Nada se perde enquanto existir referência para o commit. Por isso: **backup primeiro, sempre**.
 
@@ -12,8 +12,8 @@ Nada se perde enquanto existir referência para o commit. Por isso: **backup pri
 
 1. Entenda o estado: `git status`, `git log -5 --oneline` e `git reflog -20 --date=relative`.
 2. Identifique no reflog o ponto **antes** do erro (ex.: a linha anterior ao `rebase (start)`, ao `commit (amend)`, ao `reset: moving to`). Se o argumento não deixa claro o que desfazer, mostre as linhas do reflog e pergunte.
-3. Crie o backup do estado atual: `git branch backup/desfazer-$(date +%Y%m%d-%H%M%S)`.
-4. Se houver mudança não commitada e a operação for descartar o working tree, faça `git stash push -u -m desfazer` antes.
+3. Crie o backup do estado atual: `git branch backup/undo-$(date +%Y%m%d-%H%M%S)`.
+4. Se houver mudança não commitada e a operação for descartar o working tree, faça `git stash push -u -m undo` antes.
 5. Aplique o caso:
 
 | O que desfazer | Comando |
