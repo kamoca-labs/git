@@ -31,7 +31,7 @@ Commits semânticos, atômicos e explicados, sempre em branch dedicada. Cada reg
 | `/git:main` | `/git:commit [...]` | Só autoriza. O Claude não consegue invocá-lo sozinho (`disable-model-invocation`) |
 | `/git:sync` | `[branch]` | Mergeada: volta para a branch padrão atualizada e apaga a local com `-d`. Não mergeada: fica nela e faz `pull`. Limpa outras branches já mergeadas |
 | `/git:split` | `[branch] [/<plugin>:<comando> ...]` | Quebra a branch em branches encadeadas, uma por assunto, conferindo que a soma reproduz a original. A original fica intacta |
-| `/git:desfazer` | `[commit\|amend\|rebase\|merge\|reset\|branch <nome>]` | Desfaz pelo reflog, com branch de backup antes; em branch compartilhada usa `revert` |
+| `/git:undo` | `[commit\|amend\|rebase\|merge\|reset\|branch <nome>]` | Desfaz pelo reflog, com branch de backup antes; em branch compartilhada usa `revert` |
 
 ## Regras
 
@@ -72,7 +72,7 @@ git log --grep 'Main-Risk:'
 | `skills/main/SKILL.md` | autorização da main |
 | `skills/sync/SKILL.md` | volta para a padrão depois do merge e limpa as branches |
 | `skills/split/SKILL.md` | divisão da branch em partes encadeadas |
-| `skills/desfazer/SKILL.md` | recuperação pelo reflog, caso a caso |
+| `skills/undo/SKILL.md` | recuperação pelo reflog, caso a caso |
 | `hooks/hooks.json` | um hook por regra, com `if:` e `statusMessage` próprios |
 | `hooks/lib.ts` | leitura do payload, extração da mensagem, leitura do prompt (`/git:main`) |
 | `hooks/rules/<regra>.ts` | uma regra por arquivo |
