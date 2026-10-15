@@ -59,6 +59,12 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/protected-branch-push.ts\"",
             "timeout": 10,
             "statusMessage": "git:protected-branch-push: push na main"
+          },
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/mr-no-ai.ts\"",
+            "timeout": 10,
+            "statusMessage": "git:mr-no-ai: PR/MR sem menção a IA"
           }
         ]
       }

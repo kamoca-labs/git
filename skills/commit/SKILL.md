@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Commita as mudanças pendentes em commits semânticos atômicos, com body explicando por quê e o quê, sempre em branch dedicada, e faz push. Aceita nos argumentos o modificador /git:main e um comando de outro plugin para rodar depois do push.
+description: Commita as mudanças pendentes em commits semânticos atômicos, com body explicando por quê e o quê, sempre em branch dedicada, e faz push. Aceita nos argumentos o modificador /git:main e um comando para rodar depois do push, como /git:mr.
 argument-hint: "[/git:main] [/<plugin>:<comando> ...] [instruções]"
 ---
 
@@ -11,7 +11,7 @@ Os hooks do plugin (`[git:<regra>]`, um por regra) validam tudo abaixo. Se algum
 ## Modificadores (nos argumentos)
 
 - `/git:main`: autoriza commit e push na main. Sem ele, o hook nega.
-- `/<plugin>:<comando> ...` de outro plugin (abrir PR/MR, por exemplo): ao terminar o push, invoque essa skill (Skill tool), repassando os argumentos que vêm depois dela.
+- `/<plugin>:<comando> ...` (`/git:mr` para abrir o PR/MR, ou um comando de outro plugin): ao terminar o push, invoque essa skill (Skill tool), repassando os argumentos que vêm depois dela.
 
 ## Passos
 

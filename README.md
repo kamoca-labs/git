@@ -21,13 +21,14 @@ Requer Node 22.18+. Os comandos aparecem na próxima sessão. Clone e atualizaç
 
 ## Visão geral
 
-Commits semânticos, atômicos e explicados, sempre em branch dedicada. Cada regra é um hook próprio que nega o commit ou o push fora do padrão. As mensagens chegam com o nome da regra: `[git:<regra>] motivo`.
+Commits semânticos, atômicos e explicados, sempre em branch dedicada, e PR/MR com descrição curta, sem menção a IA. Cada regra é um hook próprio que nega o commit, o push ou o PR/MR fora do padrão. As mensagens chegam com o nome da regra: `[git:<regra>] motivo`.
 
 ## Comandos
 
 | Comando | Argumentos | O que faz |
 |---|---|---|
 | `/git:commit` | `[/git:main] [/<plugin>:<comando> ...] [instruções]` | Lê o diff e a conversa, agrupa por assunto, commita com body e faz push. Na main sem `/git:main`, cria uma branch antes. Comando de outro plugin nos argumentos roda depois do push |
+| `/git:mr` | `[branch de destino] [instruções]` | Abre o PR/MR no GitHub (`gh`) ou no GitLab (`glab`), com título semântico e descrição em duas seções: **Por quê** e **Como**. Se a branch já tem PR/MR, atualiza a descrição |
 | `/git:main` | `/git:commit [...]` | Só autoriza. O Claude não consegue invocá-lo sozinho (`disable-model-invocation`) |
 | `/git:sync` | `[branch]` | Mergeada: volta para a branch padrão atualizada e apaga a local com `-d`. Não mergeada: fica nela e faz `pull`. Limpa outras branches já mergeadas |
 | `/git:split` | `[branch] [/<plugin>:<comando> ...]` | Quebra a branch em branches encadeadas, uma por assunto, conferindo que a soma reproduz a original. A original fica intacta |
@@ -35,7 +36,7 @@ Commits semânticos, atômicos e explicados, sempre em branch dedicada. Cada reg
 
 ## Regras
 
-Disparam em `git commit` e `git push` feitos pelo Claude. O `git` digitado por você no terminal não passa por elas.
+Disparam em `git commit`, `git push` e na escrita de PR/MR (`gh pr`, `glab mr`) feitos pelo Claude. O `git` digitado por você no terminal não passa por elas.
 
 | Regra (`hooks/rules/`) | Evento | Limite | Exemplo negado |
 |---|---|---|---|
@@ -47,6 +48,7 @@ Disparam em `git commit` e `git push` feitos pelo Claude. O `git` digitado por v
 | `no-co-author` | commit | sem `Co-Authored-By` nem "Generated with Claude" | trailer de co-author |
 | `protected-branch-commit` | commit | na `main`/`master`, só com `/git:main` e os trailers | commit na main sem autorização |
 | `protected-branch-push` | push | push para `main`/`master` só com `/git:main`; push só de tag (`refs/tags/...`) passa | `git push origin HEAD:main` |
+| `mr-no-ai` | PR/MR | título e descrição sem `Co-Authored-By`, "Generated with", 🤖, link de sessão nem nome de IA (Claude, Anthropic, OpenAI, ChatGPT, GPT, Copilot, Gemini, Codex, DeepSeek); arquivo entre crases (`CLAUDE.md`) passa. Vale em `gh pr create\|edit\|comment\|review` e `glab mr create\|update\|note` | `Generated with [Claude Code]` no fim da descrição |
 | `main-audit` | depois do commit | registra cada commit feito na main | (não nega) |
 
 ## Commit na main
@@ -70,6 +72,7 @@ git log --grep 'Main-Risk:'
 |---|---|
 | `skills/commit/SKILL.md` | passos e formato do commit |
 | `skills/main/SKILL.md` | autorização da main |
+| `skills/mr/SKILL.md` | passos, formato e comandos do PR/MR |
 | `skills/sync/SKILL.md` | volta para a padrão depois do merge e limpa as branches |
 | `skills/split/SKILL.md` | divisão da branch em partes encadeadas |
 | `skills/undo/SKILL.md` | recuperação pelo reflog, caso a caso |

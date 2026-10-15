@@ -4,6 +4,7 @@
 
 - [Commitar o que está pendente](#commitar-o-que-está-pendente)
 - [Commitar e encadear outro comando](#commitar-e-encadear-outro-comando)
+- [Abrir o PR/MR](#abrir-o-prmr)
 - [Dar instruções extras](#dar-instruções-extras)
 - [Hotfix direto na main](#hotfix-direto-na-main)
 - [Quando o hook nega](#quando-o-hook-nega)
@@ -33,6 +34,27 @@ Se você estiver na main, ele cria uma branch (`fix/rejeitar-anexo-grande`) ante
 ```
 
 Faz os commits e o push, depois invoca o comando do outro plugin com o resto dos argumentos (abrir o PR/MR com revisor, por exemplo). O `git` não depende de nenhum plugin: qualquer um instalado serve.
+
+## Abrir o PR/MR
+
+```
+/git:mr
+/git:commit /git:mr
+```
+
+O Claude abre o PR/MR da branch no GitHub ou no GitLab, conforme o `origin`. O título segue o commit, e a descrição tem só duas seções:
+
+```markdown
+## Por quê
+
+Anexos acima de 10 MB travavam a fila de processamento.
+
+## Como
+
+- Valida o tamanho antes de enfileirar e devolve 422.
+```
+
+O hook `mr-no-ai` nega o título ou a descrição que cita uma IA ou traz co-author.
 
 ## Dar instruções extras
 
@@ -70,7 +92,7 @@ O `/git:main` vale só para o prompt em que foi digitado. No prompt seguinte, a 
 
 O Claude recebe `[git:<regra>] motivo` (todas as regras violadas de uma vez), corrige e tenta de novo:
 
-| Mensagem do hook | Commit negado | Correção |
+| Mensagem do hook | Chamada negada | Correção |
 |---|---|---|
 | `Título fora do padrão semântico` | `atualiza README` | `docs: update install steps` |
 | `Conjunção (e/and/&/+) no título` | `feat: add export and import` | dois commits: `feat: add export`, `feat: add import` |
@@ -80,6 +102,7 @@ O Claude recebe `[git:<regra>] motivo` (todas as regras violadas de uma vez), co
 | `Co-author/atribuição não é permitida` | `Co-Authored-By: ...` | remova o trailer |
 | `Commit direto na main só com /git:main` | commit na main | crie uma branch ou use `/git:main` |
 | `Mensagem não encontrada` | `git commit` sem `-m` | `git commit -F - <<'EOF' ... EOF` |
+| `PR/MR sem menção a IA` | descrição com `Generated with [Claude Code]` | remova a linha |
 
 ## Consultar a auditoria
 
