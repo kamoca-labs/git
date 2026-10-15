@@ -63,9 +63,12 @@ export function isProtectedBranch(cwd: string): boolean {
   return PROTECTED_BRANCH.test(git(cwd, 'rev-parse', '--abbrev-ref', 'HEAD'))
 }
 
+export function withoutHeredoc(command: string): string {
+  return command.replace(new RegExp(HEREDOC.source, 'g'), '')
+}
+
 export function runsGit(command: string, subcommand: string): boolean {
-  const withoutHeredoc = command.replace(new RegExp(HEREDOC.source, 'g'), '')
-  return new RegExp(`\\bgit\\s+(-\\S+\\s+)*${subcommand}\\b`).test(withoutHeredoc)
+  return new RegExp(`\\bgit\\s+(-\\S+\\s+)*${subcommand}\\b`).test(withoutHeredoc(command))
 }
 
 export function isCommit({ tool_input }: HookInput): boolean {
