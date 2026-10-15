@@ -106,5 +106,23 @@
     "tool_name": "Bash",
     "tool_input": { "command": "d=/tmp/live; rm -rf $d; mkdir -p $d && git -C $d init -q -b feat/x" },
     "deny": []
+  },
+  {
+    "description": "PR/MR com por quê e como passa por todas as regras",
+    "origin": "usage",
+    "branch": "feat/x",
+    "prompt": "/git:mr",
+    "tool_name": "Bash",
+    "tool_input": { "command": "gh pr create --base main --title 'fix(upload): reject files above the size limit' --body-file - <<'EOF'\n## Por quê\n\nAnexos acima de 10 MB travavam a fila.\n\n## Como\n\n- Valida o tamanho antes de enfileirar.\nEOF" },
+    "deny": []
+  },
+  {
+    "description": "PR/MR com rodapé de atribuição a IA",
+    "origin": "usage",
+    "branch": "feat/x",
+    "prompt": "/git:mr",
+    "tool_name": "Bash",
+    "tool_input": { "command": "gh pr create --base main --title 'fix(upload): reject files above the size limit' --body-file - <<'EOF'\n## Por quê\n\nAnexos acima de 10 MB travavam a fila.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\nEOF" },
+    "deny": ["mr-no-ai"]
   }
 ]
