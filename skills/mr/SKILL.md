@@ -18,12 +18,7 @@ Os hooks do plugin (`[git:<regra>]`, um por regra) validam o título, a descriç
 
 ## Ferramenta
 
-1. Descubra a forja pela URL de `git remote get-url origin`: `github` ou `gitlab`. Instância própria do GitLab também conta como `gitlab`.
-2. Se há um servidor MCP dessa forja na sessão, use o MCP. O nome da ferramenta tem a forma `mcp__<servidor>__<ferramenta>`, por exemplo `mcp__github__create_pull_request` ou `mcp__plugin_gitlab_gitlab__save_merge_request`.
-3. Se não há MCP, use a CLI: `gh` no GitHub, `glab` no GitLab.
-4. Se o MCP pede autenticação, peça ao usuário para autenticar no `/mcp`. Se a CLI falta ou não tem login, mostre o comando para o usuário rodar com `!`.
-
-Nunca crie commit pela API da forja (`create_or_update_file`, `push_files`, `add_commit`). O hook `no-api-commit` nega, porque o commit pela API não passa pelas regras de commit. Use `/git:commit` e `git push`.
+Carregue a skill `git:forge` (Skill tool). Ela diz como achar a forja e o projeto, e qual ferramenta usar: MCP, CLI ou pedido ao usuário.
 
 ## Passos
 
