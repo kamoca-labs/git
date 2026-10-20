@@ -19,13 +19,26 @@ export const TITLE_MAX = 72
 const HEREDOC = /<<-?\s*['"]?(\w+)['"]?\n([\s\S]*?)\n\s*\1\b/
 const SEMANTIC = /^(feat|fix|refactor|perf|test|docs|style|chore|ci|build|revert)(?:\(([^()\s]+)\))?!?: (\S.*)$/
 const PROTECTED_BRANCH = /^(main|master)$/
+const GIT_GLOBAL_OPTIONS = String.raw`(?:-[Cc]\s+\S+\s+|-\S+\s+)*`
+const CD_PREFIX = /^\s*cd\s+(['"]?)([^'"\s]+)\1\s*&&/
+const GIT_DIRECTORY = /\bgit\s+(?:-\S+\s+)*?-C\s+(['"]?)([^'"\s]+)\1/
 const CASES_LOG = process.env.HOOK_CASES_LOG || path.join(os.homedir(), '.claude', 'hook-cases.jsonl')
 
 let currentInput: HookInput | null = null
 
+function resolveDirectory(base: string, directory?: string): string {
+  return directory ? path.resolve(base, directory.replace(/^~(?=\/|$)/, os.homedir())) : base
+}
+
+function commandDirectory(sessionCwd: string, command = ''): string {
+  const flags = withoutHeredoc(command)
+  const cdDirectory = resolveDirectory(sessionCwd, flags.match(CD_PREFIX)?.[2])
+  return resolveDirectory(cdDirectory, flags.match(GIT_DIRECTORY)?.[2])
+}
+
 export function readInput(): HookInput {
   const input = JSON.parse(fs.readFileSync(0, 'utf8'))
-  currentInput = { ...input, cwd: input.cwd || process.cwd() }
+  currentInput = { ...input, cwd: commandDirectory(input.cwd || process.cwd(), input.tool_input?.command) }
   return currentInput!
 }
 
@@ -70,7 +83,7 @@ export function withoutHeredoc(command: string): string {
 }
 
 export function runsGit(command: string, subcommand: string): boolean {
-  return new RegExp(`\\bgit\\s+(-\\S+\\s+)*${subcommand}\\b`).test(withoutHeredoc(command))
+  return new RegExp(`\\bgit\\s+${GIT_GLOBAL_OPTIONS}${subcommand}\\b`).test(withoutHeredoc(command))
 }
 
 export function isCommit({ tool_input }: HookInput): boolean {

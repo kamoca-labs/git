@@ -19,6 +19,14 @@ export type Sandbox = {
   commit: (rule: string, message: string) => SpawnSyncReturns<string>
 }
 
+function initRepo(repo: string, branch: string) {
+  const git = (...args: string[]) => execFileSync('git', args, { cwd: repo, encoding: 'utf8' })
+  git('init', '-q', '-b', 'main')
+  git('-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-q', '--allow-empty', '-m', 'chore: init')
+  if (branch !== 'main') git('checkout', '-q', '-b', branch)
+  return git
+}
+
 export function sandbox(branch = 'feat/x'): Sandbox {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'git-hooks-'))
   const repo = path.join(root, 'repo')
@@ -27,10 +35,7 @@ export function sandbox(branch = 'feat/x'): Sandbox {
   const casesLog = path.join(root, 'cases.jsonl')
   fs.mkdirSync(repo)
 
-  const git = (...args: string[]) => execFileSync('git', args, { cwd: repo, encoding: 'utf8' })
-  git('init', '-q', '-b', 'main')
-  git('-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-q', '--allow-empty', '-m', 'chore: init')
-  if (branch !== 'main') git('checkout', '-q', '-b', branch)
+  const git = initRepo(repo, branch)
 
   const prompt = (text: string) => {
     const entries = [
@@ -58,4 +63,10 @@ export function allowed(result: SpawnSyncReturns<string>) {
 export function denied(result: SpawnSyncReturns<string>, pattern: RegExp) {
   assert.strictEqual(result.status, 2, `esperava negar com ${pattern}`)
   assert.match(result.stderr, pattern)
+}
+
+export function otherRepo(branch: string): string {
+  const repo = fs.mkdtempSync(path.join(os.tmpdir(), 'git-hooks-other-'))
+  initRepo(repo, branch)
+  return repo
 }
