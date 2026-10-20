@@ -108,12 +108,12 @@
     "deny": []
   },
   {
-    "description": "PR/MR com por quê e como passa por todas as regras",
+    "description": "PR/MR com por quê e o que muda passa por todas as regras",
     "origin": "usage",
     "branch": "feat/x",
     "prompt": "/git:mr",
     "tool_name": "Bash",
-    "tool_input": { "command": "gh pr create --base main --title 'fix(upload): reject files above the size limit' --body-file - <<'EOF'\n## Por quê\n\nAnexos acima de 10 MB travavam a fila.\n\n## Como\n\n- Valida o tamanho antes de enfileirar.\nEOF" },
+    "tool_input": { "command": "gh pr create --base main --title 'fix(upload): reject files above the size limit' --body-file - <<'EOF'\n## Por quê\n\nAnexos acima de 10 MB travavam a fila.\n\n## O que muda\n\n- Valida o tamanho antes de enfileirar.\nEOF" },
     "deny": []
   },
   {
@@ -122,7 +122,52 @@
     "branch": "feat/x",
     "prompt": "/git:mr",
     "tool_name": "Bash",
-    "tool_input": { "command": "gh pr create --base main --title 'fix(upload): reject files above the size limit' --body-file - <<'EOF'\n## Por quê\n\nAnexos acima de 10 MB travavam a fila.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\nEOF" },
+    "tool_input": { "command": "gh pr create --base main --title 'fix(upload): reject files above the size limit' --body-file - <<'EOF'\n## Por quê\n\nAnexos acima de 10 MB travavam a fila.\n\n## O que muda\n\n- Valida o tamanho antes de enfileirar.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\nEOF" },
     "deny": ["mr-no-ai"]
+  },
+  {
+    "description": "PR/MR sem seções e com título fora do padrão viola duas regras",
+    "origin": "usage",
+    "branch": "feat/x",
+    "prompt": "/git:mr",
+    "tool_name": "Bash",
+    "tool_input": { "command": "glab mr create --target-branch main --title 'ajusta upload' --description \"$(cat <<'EOF'\nAnexos acima de 10 MB travavam a fila. Agora o tamanho é validado antes de enfileirar.\nEOF\n)\"" },
+    "deny": ["mr-semantic-title", "mr-sections"]
+  },
+  {
+    "description": "PR criado pelo MCP do GitHub passa por todas as regras",
+    "origin": "usage",
+    "branch": "feat/x",
+    "prompt": "/git:mr",
+    "tool_name": "mcp__github__create_pull_request",
+    "tool_input": { "owner": "kamoca", "repo": "app", "head": "fix/upload", "base": "main", "draft": true, "title": "fix(upload): reject files above the size limit", "body": "## Por quê\n\nAnexos acima de 10 MB travavam a fila.\n\n## O que muda\n\n- Valida o tamanho antes de enfileirar." },
+    "deny": []
+  },
+  {
+    "description": "MR criado pelo MCP do GitLab sem squash explícito",
+    "origin": "usage",
+    "branch": "feat/x",
+    "prompt": "/git:mr draft",
+    "tool_name": "mcp__plugin_gitlab_gitlab__save_merge_request",
+    "tool_input": { "project_id": "kamoca/app", "source_branch": "fix/upload", "target_branch": "main", "remove_source_branch": true, "title": "Draft: fix(upload): reject files above the size limit", "description": "## Por quê\n\nAnexos acima de 10 MB travavam a fila.\n\n## O que muda\n\n- Valida o tamanho antes de enfileirar." },
+    "deny": ["mr-no-squash"]
+  },
+  {
+    "description": "merge com squash pelo MCP do GitHub",
+    "origin": "usage",
+    "branch": "feat/x",
+    "prompt": "faz o merge do PR",
+    "tool_name": "mcp__github__merge_pull_request",
+    "tool_input": { "owner": "kamoca", "repo": "app", "pullNumber": 2, "merge_method": "squash" },
+    "deny": ["mr-no-squash"]
+  },
+  {
+    "description": "commit pela API do GitHub",
+    "origin": "usage",
+    "branch": "feat/x",
+    "prompt": "corrige o typo direto no GitHub",
+    "tool_name": "mcp__github__create_or_update_file",
+    "tool_input": { "owner": "kamoca", "repo": "app", "path": "README.md", "branch": "fix/typo", "message": "fix typo", "content": "..." },
+    "deny": ["no-api-commit"]
   }
 ]

@@ -1,6 +1,6 @@
 {
   "name": "git",
-  "description": "/git:commit, /git:mr, /git:main, /git:sync, /git:split e /git:undo, com hook que valida mensagem, branch, push e PR/MR sem menção a IA.",
-  "version": "0.5.0",
+  "description": "/git:commit, /git:mr, /git:review, /git:ci, /git:daily, /git:release, /git:main, /git:sync, /git:split e /git:undo. O MCP da forja (GitHub ou GitLab) é usado quando existe, e a CLI quando não existe. Hook que valida mensagem, branch e push, e no PR/MR (CLI ou MCP) o título, a descrição, o squash e a menção a IA.",
+  "version": "0.6.0",
   "author": { "name": "kamoca" }
 }

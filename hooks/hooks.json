@@ -59,12 +59,58 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/protected-branch-push.ts\"",
             "timeout": 10,
             "statusMessage": "git:protected-branch-push: push na main"
-          },
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|mcp__.*(github|gitlab).*",
+        "hooks": [
           {
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/mr-no-ai.ts\"",
             "timeout": 10,
             "statusMessage": "git:mr-no-ai: PR/MR sem menção a IA"
+          },
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/mr-semantic-title.ts\"",
+            "timeout": 10,
+            "statusMessage": "git:mr-semantic-title: título semântico do PR/MR"
+          },
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/mr-title-length.ts\"",
+            "timeout": 10,
+            "statusMessage": "git:mr-title-length: tamanho do título do PR/MR"
+          },
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/mr-description.ts\"",
+            "timeout": 10,
+            "statusMessage": "git:mr-description: descrição obrigatória do PR/MR"
+          },
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/mr-sections.ts\"",
+            "timeout": 10,
+            "statusMessage": "git:mr-sections: seções da descrição do PR/MR"
+          },
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/mr-no-squash.ts\"",
+            "timeout": 10,
+            "statusMessage": "git:mr-no-squash: sem squash"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__.*(github|gitlab).*__(add_commit|create_commit|create_or_update_file|push_files|delete_file)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/no-api-commit.ts\"",
+            "timeout": 10,
+            "statusMessage": "git:no-api-commit: commit só via git"
           }
         ]
       }

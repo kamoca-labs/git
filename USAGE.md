@@ -5,6 +5,10 @@
 - [Commitar o que está pendente](#commitar-o-que-está-pendente)
 - [Commitar e encadear outro comando](#commitar-e-encadear-outro-comando)
 - [Abrir o PR/MR](#abrir-o-prmr)
+- [Revisar o PR/MR de outra pessoa](#revisar-o-prmr-de-outra-pessoa)
+- [Diagnosticar o CI](#diagnosticar-o-ci)
+- [Escrever a daily](#escrever-a-daily)
+- [Lançar uma versão](#lançar-uma-versão)
 - [Dar instruções extras](#dar-instruções-extras)
 - [Hotfix direto na main](#hotfix-direto-na-main)
 - [Quando o hook nega](#quando-o-hook-nega)
@@ -39,22 +43,75 @@ Faz os commits e o push, depois invoca o comando do outro plugin com o resto dos
 
 ```
 /git:mr
-/git:commit /git:mr
+/git:mr @fulano @ciclano
+/git:mr @auto draft
+/git:mr target:feat/upload-1
+/git:commit /git:mr @auto
 ```
 
-O Claude abre o PR/MR da branch no GitHub ou no GitLab, conforme o `origin`. O título segue o commit, e a descrição tem só duas seções:
+O Claude abre o PR/MR da branch no GitHub ou no GitLab, conforme o `origin`. Se a sessão tem o MCP da forja, ele usa o MCP. Se não tem, ele usa a CLI (`gh` ou `glab`).
+
+O título segue o commit. A descrição tem duas seções obrigatórias e duas opcionais:
 
 ```markdown
 ## Por quê
 
 Anexos acima de 10 MB travavam a fila de processamento.
 
-## Como
+## O que muda
 
 - Valida o tamanho antes de enfileirar e devolve 422.
+
+## Como testar
+
+Envie um anexo de 11 MB e confira a resposta 422.
 ```
 
-O hook `mr-no-ai` nega o título ou a descrição que cita uma IA ou traz co-author.
+- `@fulano`: adiciona o revisor pelo username.
+- `@auto`: adiciona os dois autores mais frequentes dos arquivos alterados, sem você.
+- `draft`: abre como rascunho (`--draft` ou `Draft: ` no título do GitLab).
+- `target:<branch>`: troca a branch de destino. O `/git:split` usa este argumento em cada parte.
+
+O PR/MR nunca usa squash, nem na criação nem no merge. No GitLab, o MR sai com a opção de apagar a branch de origem no merge.
+
+## Revisar o PR/MR de outra pessoa
+
+```
+/git:review https://github.com/kamoca/app/pull/12
+/git:review https://gitlab.exemplo.com/devel/app/-/merge_requests/34 foca na migration
+/git:review 12 approve
+/git:review
+```
+
+O Claude lê o diff, as discussões e o contexto que você passa, e mostra os achados (`arquivo:linha`, gravidade e comentário). Nada é publicado antes da sua confirmação. Depois, os achados saem num único review, com comentários em linha. Sem argumento, ele procura os PR/MR em que você é revisor.
+
+## Diagnosticar o CI
+
+```
+/git:ci
+/git:ci https://github.com/kamoca/app/actions/runs/123
+/git:ci !34 retry
+```
+
+Uma linha por job que falhou: a causa, o trecho do log que prova a causa e a correção. O `retry` só roda de novo quando todas as falhas são intermitentes.
+
+## Escrever a daily
+
+```
+/git:daily
+/git:daily since:2026-10-16
+```
+
+O Claude junta os seus commits de todos os repos em `~/Development` e os PR/MR do GitHub e do GitLab, e escreve os tópicos de ontem, hoje e bloqueios.
+
+## Lançar uma versão
+
+```
+/git:release
+/git:release minor rc
+```
+
+O Claude calcula a versão pelos commits, mostra o changelog e espera o seu ok. Depois, cria a tag anotada, faz o push só da tag e cria a release na forja.
 
 ## Dar instruções extras
 
@@ -103,6 +160,11 @@ O Claude recebe `[git:<regra>] motivo` (todas as regras violadas de uma vez), co
 | `Commit direto na main só com /git:main` | commit na main | crie uma branch ou use `/git:main` |
 | `Mensagem não encontrada` | `git commit` sem `-m` | `git commit -F - <<'EOF' ... EOF` |
 | `PR/MR sem menção a IA` | descrição com `Generated with [Claude Code]` | remova a linha |
+| `Título do PR/MR fora do padrão semântico` | `ajusta upload` | `fix(upload): reject large files` |
+| `Descrição do PR/MR sem as seções obrigatórias: ## O que muda` | descrição só com o porquê | adicione a seção |
+| `Squash nunca` | `gh pr merge --squash` | `gh pr merge --merge` |
+| `Passe squash: false ao criar o MR` | `save_merge_request` sem `squash` | adicione `squash: false` |
+| `Commit pela API da forja` | `create_or_update_file` no MCP do GitHub | `/git:commit` e `git push` |
 
 ## Consultar a auditoria
 

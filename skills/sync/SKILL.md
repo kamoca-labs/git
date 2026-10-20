@@ -6,7 +6,7 @@ argument-hint: "[branch]"
 
 # git:sync
 
-A detecção de merge confia no histórico: ela pressupõe merge sem squash, em que os commits da branch chegam à branch padrão do jeito que foram feitos. Branch mergeada com squash aparece como não mergeada (passo 6).
+A detecção de merge confia no histórico: ela pressupõe merge sem squash, em que os commits da branch chegam à branch padrão do jeito que foram feitos. O hook `mr-no-squash` garante isso nos PR/MR feitos pelo Claude. Branch mergeada com squash por outra pessoa aparece como não mergeada (passo 6).
 
 ## Passos
 
