@@ -10,7 +10,7 @@ type Case = {
   branch: string
   prompt: string
   tool_name: string
-  tool_input: { command: string }
+  tool_input: Record<string, unknown>
   deny: string[]
 }
 
@@ -31,7 +31,7 @@ for (const useCase of cases) {
     const box = sandbox(useCase.branch)
     box.prompt(useCase.prompt)
     const denied = preToolRules(useCase.tool_name)
-      .filter((rule) => box.run(rule, useCase.tool_input.command).status === 2)
+      .filter((rule) => box.call(rule, useCase).status === 2)
     assert.deepStrictEqual(denied.sort(), [...useCase.deny].sort())
   })
 }

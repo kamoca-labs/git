@@ -1,21 +1,14 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { test } from 'node:test'
-import { allowed, BODY, denied, sandbox } from './helpers.ts'
+import { allowed, BODY, denied, ghCreate, glabCreate, MERGE_REQUEST_WRITES, MR_DESCRIPTION, MR_TITLE, sandbox } from './helpers.ts'
 
 const RULE = 'mr-no-ai'
-const DESCRIPTION = '## Por quê\n\nAnexos acima de 10 MB travavam a fila.\n\n## Como\n\n- Valida o tamanho antes de enfileirar.'
-
-const ghCreate = (title: string, description: string) =>
-  `gh pr create --base main --title '${title}' --body-file - <<'EOF'\n${description}\nEOF`
-
-const glabCreate = (title: string, description: string) =>
-  `glab mr create --target-branch main --title '${title}' --description "$(cat <<'EOF'\n${description}\nEOF\n)"`
 
 test('aceita PR/MR sem menção a IA', () => {
-  const { run } = sandbox()
-  allowed(run(RULE, ghCreate('fix(upload): reject files above the limit', DESCRIPTION)))
-  allowed(run(RULE, glabCreate('fix(upload): reject files above the limit', DESCRIPTION)))
+  for (const write of MERGE_REQUEST_WRITES) {
+    allowed(sandbox().call(RULE, write({ title: MR_TITLE, description: MR_DESCRIPTION })))
+  }
 })
 
 test('nega atribuição e menção a IA na descrição', () => {
@@ -35,17 +28,18 @@ test('nega atribuição e menção a IA na descrição', () => {
     'Modelo da OpenAI.',
   ]
   for (const mention of mentions) {
-    denied(sandbox().run(RULE, ghCreate('fix: x', `${DESCRIPTION}\n\n${mention}`)), /\[git:mr-no-ai\]/)
+    denied(sandbox().call(RULE, ghCreate({ title: 'fix: x', description: `${MR_DESCRIPTION}\n\n${mention}` })), /\[git:mr-no-ai\]/)
   }
 })
 
 test('nega menção a IA no título', () => {
-  denied(sandbox().run(RULE, ghCreate('feat: add claude support', DESCRIPTION)), /\[git:mr-no-ai\]/)
+  denied(sandbox().call(RULE, ghCreate({ title: 'feat: add claude support', description: MR_DESCRIPTION })), /\[git:mr-no-ai\]/)
 })
 
 test('nega no GitLab, na edição e no comentário', () => {
+  const box = sandbox()
+  denied(box.call(RULE, glabCreate({ title: 'fix: x', description: `${MR_DESCRIPTION}\n\nFeito com o Claude.` })), /\[git:mr-no-ai\]/)
   const commands = [
-    glabCreate('fix: x', `${DESCRIPTION}\n\nFeito com o Claude.`),
     `glab mr update 12 --description 'Feito com o Claude.'`,
     `glab mr note 12 --message 'Feito com o Claude.'`,
     `gh pr edit 2 --body 'Feito com o Claude.'`,
@@ -53,25 +47,35 @@ test('nega no GitLab, na edição e no comentário', () => {
     `gh pr review 2 --approve --body 'Feito com o Claude.'`,
   ]
   for (const command of commands) {
-    denied(sandbox().run(RULE, command), /\[git:mr-no-ai\]/)
+    denied(box.run(RULE, command), /\[git:mr-no-ai\]/)
+  }
+})
+
+test('nega menção a IA no título e na descrição pelo MCP', () => {
+  for (const write of MERGE_REQUEST_WRITES) {
+    denied(sandbox().call(RULE, write({ title: MR_TITLE, description: `${MR_DESCRIPTION}\n\nGenerated with Claude.` })), /\[git:mr-no-ai\]/)
+    denied(sandbox().call(RULE, write({ title: 'feat: add copilot support' })), /\[git:mr-no-ai\]/)
   }
 })
 
 test('nega descrição em arquivo com menção a IA', () => {
   const box = sandbox()
-  fs.writeFileSync(path.join(box.repo, 'notes.md'), `${DESCRIPTION}\n\nFeito com o Claude.`)
+  fs.writeFileSync(path.join(box.repo, 'notes.md'), `${MR_DESCRIPTION}\n\nFeito com o Claude.`)
   denied(box.run(RULE, `gh pr create --title 'fix: x' --body-file notes.md`), /\[git:mr-no-ai\]/)
   denied(box.run(RULE, `gh pr create --title 'fix: x' -F notes.md`), /\[git:mr-no-ai\]/)
 })
 
 test('aceita arquivo e caminho entre crases', () => {
-  const description = `${DESCRIPTION}\n- Atualiza o \`CLAUDE.md\` e o \`.claude/settings.json\`.`
-  allowed(sandbox().run(RULE, ghCreate('docs: update the repo conventions', description)))
+  const description = `${MR_DESCRIPTION}\n- Atualiza o \`CLAUDE.md\` e o \`.claude/settings.json\`.`
+  for (const write of MERGE_REQUEST_WRITES) {
+    allowed(sandbox().call(RULE, write({ title: 'docs: update the repo conventions', description })))
+  }
 })
 
 test('ignora o que não escreve no PR/MR', () => {
-  const { run, commit } = sandbox()
+  const { call, run, commit } = sandbox()
   allowed(run(RULE, 'gh pr view 2 --json body'))
   allowed(run(RULE, 'glab mr list --author claude'))
+  allowed(call(RULE, { tool_name: 'mcp__github__search_pull_requests', tool_input: { query: 'author:claude' } }))
   allowed(commit(RULE, `docs: explain the claude hooks\n\n${BODY}\nCita gh pr create --body 'Claude'.`))
 })
