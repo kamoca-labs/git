@@ -29,10 +29,16 @@ Commits semânticos, atômicos e explicados, sempre em branch dedicada, e PR/MR 
 |---|---|---|
 | `/git:commit` | `[/git:main] [/<plugin>:<comando> ...] [instruções]` | Lê o diff e a conversa, agrupa por assunto, commita com body e faz push. Na main sem `/git:main`, cria uma branch antes. Comando de outro plugin nos argumentos roda depois do push |
 | `/git:mr` | `[@revisor ...\|@auto] [draft] [target:<branch>] [instruções]` | Abre o PR/MR no GitHub ou no GitLab pelo MCP da forja, ou pela CLI (`gh`, `glab`) quando não há MCP. Título semântico, descrição com **Por quê** e **O que muda**, revisores informados ou sugeridos pelo histórico (`@auto`), draft e destino. Se a branch já tem PR/MR, atualiza esse PR/MR |
+| `/git:review` | `[<link\|número do PR/MR>] [approve] [contexto]` | Revisa o PR/MR de outra pessoa a partir do link, do número ou da sua fila de revisão. Mostra os achados para confirmação e publica num único review, com comentários em linha |
+| `/git:ci` | `[<link\|número do PR/MR\|id do pipeline>] [retry] [contexto]` | Diagnostica o GitHub Actions ou o GitLab CI: lê o log dos jobs que falharam, aponta a causa e propõe a correção. Com `retry`, roda de novo só as falhas intermitentes |
+| `/git:daily` | `[since:yesterday\|AAAA-MM-DD] [pasta dos repos]` | Junta os commits de todos os repos locais e os PR/MR do GitHub e do GitLab desde o último dia útil, e escreve a daily (ontem, hoje, bloqueios) |
+| `/git:release` | `[major\|minor\|patch\|vX.Y.Z] [rc]` | Calcula a versão pelos commits semânticos, escreve o changelog, cria a tag anotada e a release na forja. O Claude não consegue invocá-lo sozinho |
 | `/git:main` | `/git:commit [...]` | Só autoriza. O Claude não consegue invocá-lo sozinho (`disable-model-invocation`) |
 | `/git:sync` | `[branch]` | Mergeada: volta para a branch padrão atualizada e apaga a local com `-d`. Não mergeada: fica nela e faz `pull`. Limpa outras branches já mergeadas |
 | `/git:split` | `[branch] [/<plugin>:<comando> ...]` | Quebra a branch em branches encadeadas, uma por assunto, conferindo que a soma reproduz a original. A original fica intacta |
 | `/git:undo` | `[commit\|amend\|rebase\|merge\|reset\|branch <nome>]` | Desfaz pelo reflog, com branch de backup antes; em branch compartilhada usa `revert` |
+
+Os comandos que falam com a forja carregam a sub-skill `git:forge`. Ela acha a forja e o projeto pelo link ou pelo `origin`, e escolhe a ferramenta para cada operação: o MCP da forja quando existe, a CLI (`gh`, `glab`) quando não existe, ou o pedido ao usuário para autenticar.
 
 ## Regras
 
@@ -79,6 +85,11 @@ git log --grep 'Main-Risk:'
 | `skills/commit/SKILL.md` | passos e formato do commit |
 | `skills/main/SKILL.md` | autorização da main |
 | `skills/mr/SKILL.md` | passos, formato e comandos do PR/MR |
+| `skills/forge/SKILL.md` | forja, projeto e ferramenta (MCP, CLI ou pedido ao usuário), compartilhados pelos comandos da forja |
+| `skills/review/SKILL.md` | revisão de PR/MR com confirmação antes de publicar |
+| `skills/ci/SKILL.md` | diagnóstico do CI e retry das falhas intermitentes |
+| `skills/daily/SKILL.md` | coleta de commits e PR/MR e texto da daily |
+| `skills/release/SKILL.md` | versão, changelog, tag e release |
 | `skills/sync/SKILL.md` | volta para a padrão depois do merge e limpa as branches |
 | `skills/split/SKILL.md` | divisão da branch em partes encadeadas |
 | `skills/undo/SKILL.md` | recuperação pelo reflog, caso a caso |

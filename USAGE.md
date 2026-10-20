@@ -5,6 +5,10 @@
 - [Commitar o que está pendente](#commitar-o-que-está-pendente)
 - [Commitar e encadear outro comando](#commitar-e-encadear-outro-comando)
 - [Abrir o PR/MR](#abrir-o-prmr)
+- [Revisar o PR/MR de outra pessoa](#revisar-o-prmr-de-outra-pessoa)
+- [Diagnosticar o CI](#diagnosticar-o-ci)
+- [Escrever a daily](#escrever-a-daily)
+- [Lançar uma versão](#lançar-uma-versão)
 - [Dar instruções extras](#dar-instruções-extras)
 - [Hotfix direto na main](#hotfix-direto-na-main)
 - [Quando o hook nega](#quando-o-hook-nega)
@@ -69,6 +73,45 @@ Envie um anexo de 11 MB e confira a resposta 422.
 - `target:<branch>`: troca a branch de destino. O `/git:split` usa este argumento em cada parte.
 
 O PR/MR nunca usa squash, nem na criação nem no merge. No GitLab, o MR sai com a opção de apagar a branch de origem no merge.
+
+## Revisar o PR/MR de outra pessoa
+
+```
+/git:review https://github.com/kamoca/app/pull/12
+/git:review https://gitlab.exemplo.com/devel/app/-/merge_requests/34 foca na migration
+/git:review 12 approve
+/git:review
+```
+
+O Claude lê o diff, as discussões e o contexto que você passa, e mostra os achados (`arquivo:linha`, gravidade e comentário). Nada é publicado antes da sua confirmação. Depois, os achados saem num único review, com comentários em linha. Sem argumento, ele procura os PR/MR em que você é revisor.
+
+## Diagnosticar o CI
+
+```
+/git:ci
+/git:ci https://github.com/kamoca/app/actions/runs/123
+/git:ci !34 retry
+```
+
+Uma linha por job que falhou: a causa, o trecho do log que prova a causa e a correção. O `retry` só roda de novo quando todas as falhas são intermitentes.
+
+## Escrever a daily
+
+```
+/git:daily
+/git:daily since:2026-10-16
+```
+
+O Claude junta os seus commits de todos os repos em `~/Development` e os PR/MR do GitHub e do GitLab, e escreve os tópicos de ontem, hoje e bloqueios.
+
+## Lançar uma versão
+
+```
+/git:release
+/git:release minor rc
+```
+
+O Claude calcula a versão pelos commits, mostra o changelog e espera o seu ok. Depois, cria a tag anotada, faz o push só da tag e cria a release na forja.
 
 ## Dar instruções extras
 
