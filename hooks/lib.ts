@@ -14,6 +14,8 @@ export type CommitMessage = { subject: string, body: string, full: string }
 
 export type Title = { type: string, scope: string | null, description: string }
 
+export const TITLE_MAX = 72
+
 const HEREDOC = /<<-?\s*['"]?(\w+)['"]?\n([\s\S]*?)\n\s*\1\b/
 const SEMANTIC = /^(feat|fix|refactor|perf|test|docs|style|chore|ci|build|revert)(?:\(([^()\s]+)\))?!?: (\S.*)$/
 const PROTECTED_BRANCH = /^(main|master)$/

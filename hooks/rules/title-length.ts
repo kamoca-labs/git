@@ -1,6 +1,4 @@
-import { commitMessage, deny, readInput } from '../lib.ts'
-
-const TITLE_MAX = 72
+import { commitMessage, deny, readInput, TITLE_MAX } from '../lib.ts'
 
 const message = commitMessage(readInput())
 
