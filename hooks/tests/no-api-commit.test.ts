@@ -3,7 +3,7 @@ import { denied, sandbox } from './helpers.ts'
 
 const RULE = 'no-api-commit'
 
-test('nega commit pela API da forja e pede /git:commit', () => {
+test('denies a commit through the forge API and asks for /git:commit', () => {
   const tools = [
     'mcp__gitlab__add_commit',
     'mcp__plugin_gitlab_gitlab__create_commit',

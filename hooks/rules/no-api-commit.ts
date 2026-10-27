@@ -1,4 +1,4 @@
 import { deny, readInput } from '../lib.ts'
 
 readInput()
-deny('no-api-commit', 'Commit pela API da forja não passa pelas regras de commit. Use /git:commit e git push.')
+deny('no-api-commit', 'A commit through the forge API skips the commit rules. Use /git:commit, which also pushes the branch.')

@@ -7,5 +7,5 @@ const refspecs = (command.match(/\bgit\s+push\b([^\n;&|]*)/)?.[1] || '').split(/
 const onlyTags = refspecs.length > 0 && refspecs.every((refspec) => refspec.startsWith('refs/tags/'))
 
 if (runsGit(command, 'push') && !onlyTags && (targetsMain || isProtectedBranch(input.cwd)) && !isMainAllowed(input)) {
-  deny('protected-branch-push', 'Push na main só com /git:main no seu prompt. Use uma branch e abra um PR/MR.')
+  deny('protected-branch-push', 'A push to main needs /git:main in your prompt. Use a branch and open a PR/MR.')
 }

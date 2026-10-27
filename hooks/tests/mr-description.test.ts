@@ -5,33 +5,33 @@ import { allowed, denied, MERGE_REQUEST_CREATES, MERGE_REQUEST_UPDATES, MERGE_RE
 
 const RULE = 'mr-description'
 
-test('aceita descrição entre 80 e 3000 chars', () => {
+test('accepts a description from 80 to 3000 chars', () => {
   for (const write of MERGE_REQUEST_WRITES) {
     allowed(sandbox().call(RULE, write({ title: MR_TITLE, description: MR_DESCRIPTION })))
   }
 })
 
-test('nega descrição curta ou longa demais', () => {
+test('denies a description that is too short or too long', () => {
   for (const write of MERGE_REQUEST_WRITES) {
-    for (const description of ['## Por quê\n\nCurta.', `## Por quê\n\n${'x'.repeat(3000)}`]) {
+    for (const description of ['## Why\n\nShort.', `## Why\n\n${'x'.repeat(3000)}`]) {
       denied(sandbox().call(RULE, write({ title: MR_TITLE, description })), /\[git:mr-description\]/)
     }
   }
 })
 
-test('nega criação sem descrição', () => {
+test('denies a creation without a description', () => {
   for (const write of MERGE_REQUEST_CREATES) {
     denied(sandbox().call(RULE, write({ title: MR_TITLE })), /\[git:mr-description\]/)
   }
 })
 
-test('atualização sem descrição passa', () => {
+test('an update without a description passes', () => {
   for (const write of MERGE_REQUEST_UPDATES) {
     allowed(sandbox().call(RULE, write({ title: MR_TITLE })))
   }
 })
 
-test('lê a descrição do arquivo do --body-file', () => {
+test('reads the description from the --body-file file', () => {
   const box = sandbox()
   fs.writeFileSync(path.join(box.repo, 'body.md'), MR_DESCRIPTION)
   allowed(box.run(RULE, `gh pr create --title '${MR_TITLE}' --body-file body.md`))

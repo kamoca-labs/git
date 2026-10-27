@@ -9,56 +9,56 @@
             "if": "Bash(git commit *)",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/commit-message-readable.ts\"",
             "timeout": 10,
-            "statusMessage": "git:commit-message-readable: mensagem legível"
+            "statusMessage": "git:commit-message-readable: readable message"
           },
           {
             "type": "command",
             "if": "Bash(git commit *)",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/semantic-title.ts\"",
             "timeout": 10,
-            "statusMessage": "git:semantic-title: título semântico"
+            "statusMessage": "git:semantic-title: semantic title"
           },
           {
             "type": "command",
             "if": "Bash(git commit *)",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/title-length.ts\"",
             "timeout": 10,
-            "statusMessage": "git:title-length: tamanho do título"
+            "statusMessage": "git:title-length: title length"
           },
           {
             "type": "command",
             "if": "Bash(git commit *)",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/single-item-commit.ts\"",
             "timeout": 10,
-            "statusMessage": "git:single-item-commit: um assunto por commit"
+            "statusMessage": "git:single-item-commit: one subject per commit"
           },
           {
             "type": "command",
             "if": "Bash(git commit *)",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/commit-body.ts\"",
             "timeout": 10,
-            "statusMessage": "git:commit-body: body obrigatório"
+            "statusMessage": "git:commit-body: body required"
           },
           {
             "type": "command",
             "if": "Bash(git commit *)",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/no-co-author.ts\"",
             "timeout": 10,
-            "statusMessage": "git:no-co-author: sem co-author"
+            "statusMessage": "git:no-co-author: no co-author"
           },
           {
             "type": "command",
             "if": "Bash(git commit *)",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/protected-branch-commit.ts\"",
             "timeout": 10,
-            "statusMessage": "git:protected-branch-commit: commit na main"
+            "statusMessage": "git:protected-branch-commit: commit on main"
           },
           {
             "type": "command",
             "if": "Bash(git push *)",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/protected-branch-push.ts\"",
             "timeout": 10,
-            "statusMessage": "git:protected-branch-push: push na main"
+            "statusMessage": "git:protected-branch-push: push to main"
           }
         ]
       },
@@ -69,37 +69,37 @@
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/mr-no-ai.ts\"",
             "timeout": 10,
-            "statusMessage": "git:mr-no-ai: PR/MR sem menção a IA"
+            "statusMessage": "git:mr-no-ai: PR/MR without AI mention"
           },
           {
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/mr-semantic-title.ts\"",
             "timeout": 10,
-            "statusMessage": "git:mr-semantic-title: título semântico do PR/MR"
+            "statusMessage": "git:mr-semantic-title: semantic PR/MR title"
           },
           {
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/mr-title-length.ts\"",
             "timeout": 10,
-            "statusMessage": "git:mr-title-length: tamanho do título do PR/MR"
+            "statusMessage": "git:mr-title-length: PR/MR title length"
           },
           {
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/mr-description.ts\"",
             "timeout": 10,
-            "statusMessage": "git:mr-description: descrição obrigatória do PR/MR"
+            "statusMessage": "git:mr-description: PR/MR description required"
           },
           {
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/mr-sections.ts\"",
             "timeout": 10,
-            "statusMessage": "git:mr-sections: seções da descrição do PR/MR"
+            "statusMessage": "git:mr-sections: PR/MR description sections"
           },
           {
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/mr-no-squash.ts\"",
             "timeout": 10,
-            "statusMessage": "git:mr-no-squash: sem squash"
+            "statusMessage": "git:mr-no-squash: no squash"
           }
         ]
       },
@@ -110,7 +110,7 @@
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/no-api-commit.ts\"",
             "timeout": 10,
-            "statusMessage": "git:no-api-commit: commit só via git"
+            "statusMessage": "git:no-api-commit: commit only through git"
           }
         ]
       }
@@ -124,7 +124,7 @@
             "if": "Bash(git commit *)",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/main-audit.ts\"",
             "timeout": 10,
-            "statusMessage": "git:main-audit: auditoria da main"
+            "statusMessage": "git:main-audit: main audit"
           }
         ]
       }

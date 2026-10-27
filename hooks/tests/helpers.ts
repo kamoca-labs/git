@@ -6,11 +6,11 @@ import path from 'node:path'
 
 const RULES = path.join(import.meta.dirname, '..', 'rules')
 
-export const BODY = 'Por quê: o fluxo antigo quebrava no CE.\nO que: troca o endpoint.'
-export const TRAILERS = 'Main-Justification: hotfix em produção\nMain-Risk: sem revisão'
+export const BODY = 'Why: the old flow failed on large uploads.\nWhat: replaces the endpoint.'
+export const TRAILERS = 'Main-Justification: hotfix in production\nMain-Risk: no review'
 
 export const MR_TITLE = 'fix(upload): reject files above the size limit'
-export const MR_DESCRIPTION = '## Por quê\n\nAnexos acima de 10 MB travavam a fila de processamento.\n\n## O que muda\n\n- Valida o tamanho antes de enfileirar.'
+export const MR_DESCRIPTION = '## Why\n\nAttachments above 10 MB blocked the processing queue.\n\n## What changes\n\n- Validates the size before queueing.'
 
 export type ToolCall = { tool_name: string, tool_input: Record<string, unknown> }
 
@@ -44,12 +44,12 @@ export const glabCreate = ({ title, description }: MergeRequestFields) =>
 
 export const githubMcpCreate = ({ title, description }: MergeRequestFields): ToolCall => ({
   tool_name: 'mcp__github__create_pull_request',
-  tool_input: { owner: 'kamoca', repo: 'app', head: 'fix/upload', base: 'main', title, body: description },
+  tool_input: { owner: 'acme', repo: 'app', head: 'fix/upload', base: 'main', title, body: description },
 })
 
 export const gitlabMcpCreate = ({ title, description }: MergeRequestFields): ToolCall => ({
   tool_name: 'mcp__plugin_gitlab_gitlab__save_merge_request',
-  tool_input: { project_id: 'kamoca/app', source_branch: 'fix/upload', target_branch: 'main', title, description, squash: false },
+  tool_input: { project_id: 'acme/app', source_branch: 'fix/upload', target_branch: 'main', title, description, squash: false },
 })
 
 export const ghEdit = ({ title, description }: MergeRequestFields) =>
@@ -60,12 +60,12 @@ export const glabUpdate = ({ title, description }: MergeRequestFields) =>
 
 export const githubMcpUpdate = ({ title, description }: MergeRequestFields): ToolCall => ({
   tool_name: 'mcp__github__update_pull_request',
-  tool_input: { owner: 'kamoca', repo: 'app', pullNumber: 2, title, body: description },
+  tool_input: { owner: 'acme', repo: 'app', pullNumber: 2, title, body: description },
 })
 
 export const gitlabMcpUpdate = ({ title, description }: MergeRequestFields): ToolCall => ({
   tool_name: 'mcp__gitlab__save_merge_request',
-  tool_input: { project_id: 'kamoca/app', merge_request_iid: 12, title, description },
+  tool_input: { project_id: 'acme/app', merge_request_iid: 12, title, description },
 })
 
 export const MERGE_REQUEST_CREATES = [ghCreate, glabCreate, githubMcpCreate, gitlabMcpCreate]
@@ -117,7 +117,7 @@ export function allowed(result: SpawnSyncReturns<string>) {
 }
 
 export function denied(result: SpawnSyncReturns<string>, pattern: RegExp) {
-  assert.strictEqual(result.status, 2, `esperava negar com ${pattern}`)
+  assert.strictEqual(result.status, 2, `expected a denial matching ${pattern}`)
   assert.match(result.stderr, pattern)
 }
 
