@@ -13,11 +13,11 @@
 ## Instalação
 
 ```bash
-claude plugin marketplace add ~/Development/claude-plugins
+claude plugin marketplace add kamoca-labs/marketplace
 claude plugin install git@kamoca
 ```
 
-Requer Node 22.18+. Os comandos aparecem na próxima sessão. Clone e atualização estão no [README do repo](../../README.md#instalação).
+Requer Node 22.18+. Os comandos aparecem na próxima sessão. Atualização está no [README do marketplace](https://github.com/kamoca-labs/marketplace#instalação).
 
 ## Visão geral
 
@@ -102,4 +102,4 @@ git log --grep 'Main-Risk:'
 | `hooks/tests/capture.test.ts` | garante que negação real vira caso em `~/.claude/hook-cases.jsonl` |
 | `hooks/tests/structure.test.ts` | garante que toda regra tem hook dedicado e teste próprio |
 
-Rodar: `node --test 'hooks/tests/*.test.ts'`. Como transformar um caso real em teste está no [USAGE do repo](../../USAGE.md#transformar-caso-real-em-teste).
+Rodar: `node --test 'hooks/tests/*.test.ts'`. Como transformar um caso real em teste está no [USAGE do repo](https://github.com/kamoca-labs/marketplace/blob/main/USAGE.md#transformar-caso-real-em-teste).
