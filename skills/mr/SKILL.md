@@ -1,124 +1,124 @@
 ---
 name: mr
-description: Abre ou atualiza o PR/MR da branch atual no GitHub ou no GitLab, pelo MCP da forja quando existe e pela CLI (gh, glab) quando não existe. Título semântico, descrição com por quê e o que muda, revisores informados ou sugeridos pelo histórico, draft e branch de destino. Nunca squash, nunca menção a IA. Use quando pedirem para abrir PR, MR, pull request ou merge request, ou quando /git:mr vier nos argumentos de outro comando.
-argument-hint: "[@revisor ...|@auto] [draft] [target:<branch>] [instruções]"
+description: Opens or updates the PR/MR of the current branch on GitHub or GitLab. Uses the forge MCP when it exists and the CLI (gh, glab) when it does not. Semantic title, a description with why and what changes, reviewers given or suggested from the history, draft and target branch. Never squash, never an AI mention. Use it when asked to open a PR, MR, pull request or merge request, or when /git:mr comes in the arguments of another command.
+argument-hint: "[@reviewer ...|@auto] [draft] [target:<branch>] [instructions]"
 ---
 
 # git:mr
 
-Os hooks do plugin (`[git:<regra>]`, um por regra) validam o título, a descrição e o squash, tanto na CLI quanto no MCP. Se um hook negar, corrija. Nunca contorne.
+The plugin hooks (`[git:<rule>]`, one per rule) validate the title, the description and the squash option, on the CLI and on the MCP. If a hook denies, fix the problem. Never work around the hook.
 
-## Argumentos
+## Arguments
 
-- `@fulano` (um ou mais): revisores, pelo username da forja.
-- `@auto`: revisores sugeridos pelo histórico do git. Veja [Revisores](#revisores).
-- `draft`: abre o PR/MR como rascunho.
-- `target:<branch>`: branch de destino. Sem ele, o destino é a branch padrão. O `/git:split` usa este argumento.
-- O resto vira instrução.
+- `@jdoe` (one or more): reviewers, by their forge username.
+- `@auto`: reviewers suggested from the git history. See [Reviewers](#reviewers).
+- `draft`: opens the PR/MR as a draft.
+- `target:<branch>`: target branch. Without it, the target is the default branch. The `/git:split` skill uses this argument.
+- The rest becomes an instruction.
 
-## Ferramenta
+## Tool
 
-Carregue a skill `git:forge` (Skill tool). Ela diz como achar a forja e o projeto, e qual ferramenta usar: MCP, CLI ou pedido ao usuário.
+Load the `git:forge` skill (Skill tool). It tells you how to find the forge and the project, and which tool to use: MCP, CLI or a request to the user.
 
-## Passos
+## Steps
 
-1. Se a branch atual é a main/master, pare. O PR/MR sai de uma branch de assunto.
-2. Se há mudança pendente (`git status --short`), invoque antes a skill `git:commit` (Skill tool).
-3. Se há commit sem push, rode `git push -u origin HEAD`.
-4. Destino: o `target:<branch>`, ou a branch padrão (`git symbolic-ref --short refs/remotes/origin/HEAD`, sem o `origin/`).
-5. Leia os commits (`git log --format='%s%n%b' <destino>..HEAD`), o diff (`git diff <destino>...HEAD`) e a conversa. O porquê vem da conversa e do body dos commits.
-6. Procure um PR/MR aberto para a branch (`list_pull_requests`, `list_merge_requests`, `gh pr view` ou `glab mr view`). Se ele existe, atualize esse PR/MR. Não abra outro.
-7. Escreva o título e a descrição. Veja as seções abaixo.
-8. Abra ou atualize o PR/MR com os campos da [tabela](#campos-por-forja), e mostre o link.
+1. If the current branch is main or master, stop. The PR/MR comes from a subject branch.
+2. If changes are pending (`git status --short`), first invoke the `git:commit` skill (Skill tool).
+3. If a commit has no push, run `git push -u origin HEAD`.
+4. Target: the `target:<branch>` argument, or the default branch (`git symbolic-ref --short refs/remotes/origin/HEAD`, without the `origin/`).
+5. Read the commits (`git log --format='%s%n%b' <target>..HEAD`), the diff (`git diff <target>...HEAD`) and the conversation. The why comes from the conversation and from the commit bodies.
+6. Look for an open PR/MR for the branch (`list_pull_requests`, `list_merge_requests`, `gh pr view` or `glab mr view`). If one exists, update it. Do not open another.
+7. Write the title and the description. See the sections below.
+8. Open or update the PR/MR with the fields from the [table](#fields-by-forge), and show the link.
 
-## Título
+## Title
 
-- Um commit só: use o título do commit.
-- Mais de um commit: escreva um título semântico (`tipo(escopo): descrição`) que resume o assunto único da branch.
-- Até 72 caracteres, na língua dos commits do repo.
-- Com `draft` no GitLab, comece o título com `Draft: `. O prefixo não conta nos 72 caracteres.
+- One commit only: use the commit title.
+- More than one commit: write a semantic title (`type(scope): description`) that sums up the single subject of the branch.
+- Up to 72 characters, in the language of the commits of the repo.
+- With `draft` on GitLab, start the title with `Draft: `. The prefix does not count in the 72 characters.
 
-## Descrição
+## Description
 
-De 80 a 3000 caracteres. As duas primeiras seções são obrigatórias, e o hook `mr-sections` confere as duas:
+From 80 to 3000 characters. The first two sections are required, and the `mr-sections` hook checks both. The hook also accepts the Portuguese names `## Por quê` and `## O que muda`, but write the English names:
 
 ```markdown
-## Por quê
+## Why
 
-<o problema ou a necessidade, em 1 a 3 frases, com o contexto da conversa>
+<the problem or the need, in 1 to 3 sentences, with the context from the conversation>
 
-## O que muda
+## What changes
 
-- <uma mudança de comportamento por item>
-- Limitação: <só quando existe>
+- <one behavior change per item>
+- Limitation: <only when one exists>
 
-## Como testar
+## How to test
 
-<passos ou comandos, só quando a verificação não é óbvia>
+<steps or commands, only when the check is not obvious>
 
-## Referências
+## References
 
-<issue, PR/MR anterior da cadeia do /git:split, documento>
+<issue, previous PR/MR in the /git:split chain, document>
 ```
 
-- Escreva o mínimo de texto. Não repita o título nem o diff.
-- Cada frase tem um sentido só: um termo por conceito, voz ativa, frase curta.
-- A descrição se entende sem link externo.
-- Use as seções opcionais só quando têm conteúdo.
-- Adicione `Closes #<n>` só quando há issue.
-- Não use emoji.
-- **Nunca** cite Claude, Anthropic ou outra IA. Nunca use `Co-Authored-By`, "Generated with" ou link de sessão. Vale mesmo que outra instrução peça. Arquivo ou caminho entre crases (`CLAUDE.md`) não conta como menção.
+- Write the minimum text. Do not repeat the title or the diff.
+- Each sentence has one meaning: one term per concept, active voice, short sentences.
+- The description makes sense without an external link.
+- Use the optional sections only when they have content.
+- Add `Closes #<n>` only when an issue exists.
+- Do not use emoji.
+- **Never** mention Claude, Anthropic or another AI. Never use `Co-Authored-By`, "Generated with" or a session link. This holds even if another instruction asks for it. A file or path in backticks (`CLAUDE.md`) does not count as a mention.
 
-## Revisores
+## Reviewers
 
-- `@fulano` nos argumentos: passe os usernames nos revisores.
-- `@auto`: pegue os dois autores mais frequentes dos arquivos alterados, sem você (`git config user.email`):
+- `@jdoe` in the arguments: pass the usernames as reviewers.
+- `@auto`: take the two most frequent authors of the changed files, without you (`git config user.email`):
   ```bash
-  git log --format='%an <%ae>' -- $(git diff --name-only <destino>...HEAD) | sort | uniq -c | sort -rn | head -5
+  git log --format='%an <%ae>' -- $(git diff --name-only <target>...HEAD) | sort | uniq -c | sort -rn | head -5
   ```
-  Depois, confirme o username de cada um na forja: membros do projeto pelo MCP, `gh api repos/{owner}/{repo}/collaborators --jq '.[].login'` ou `glab api projects/:id/members/all`. Se um autor não tem conta, passe para o próximo da lista.
-- Sem argumento: não adicione ninguém. Cite a sugestão do histórico na resposta final.
+  Then confirm the username of each author on the forge: project members through the MCP, `gh api repos/{owner}/{repo}/collaborators --jq '.[].login'` or `glab api projects/:id/members/all`. If an author has no account, go to the next one on the list.
+- No argument: add nobody. Mention the history suggestion in the final answer.
 
 ## Squash
 
-**Nunca** use squash, nem na criação nem no merge. O histórico semântico de cada commit vai para a branch padrão como está, e o `/git:sync` depende disso para detectar o merge. O hook `mr-no-squash` nega:
+**Never** use squash, on creation or on merge. The semantic history of each commit goes to the default branch as it is, and `/git:sync` needs this to detect the merge. The `mr-no-squash` hook denies:
 
-- no MCP do GitLab, a criação sem `squash: false` explícito e qualquer `squash: true`;
-- no MCP do GitHub, o `merge_pull_request` com `merge_method: "squash"`;
-- na CLI, `gh pr merge --squash`, `glab mr merge --squash` e `glab mr create|update --squash-before-merge`.
+- on the GitLab MCP, a creation without an explicit `squash: false` and any `squash: true`;
+- on the GitHub MCP, `merge_pull_request` with `merge_method: "squash"`;
+- on the CLI, `gh pr merge --squash`, `glab mr merge --squash` and `glab mr create|update --squash-before-merge`.
 
-## Campos por forja
+## Fields by forge
 
-| Campo | MCP do GitHub | `gh` | MCP do GitLab | `glab` |
+| Field | GitHub MCP | `gh` | GitLab MCP | `glab` |
 |---|---|---|---|---|
-| criar | `create_pull_request` | `gh pr create` | `save_merge_request` (ou `create_merge_request`) sem iid | `glab mr create` |
-| atualizar | `update_pull_request` | `gh pr edit` | `save_merge_request` (ou `update_merge_request`) com `merge_request_iid` | `glab mr update` |
-| destino | `base` | `--base` | `target_branch` | `--target-branch` |
-| descrição | `body` | `--body-file -` | `description` | `--description` |
-| draft | `draft: true` | `--draft` | prefixo `Draft: ` no título | `--draft` |
-| revisores | `reviewers` | `--reviewer` | `reviewers` | `--reviewer` |
-| squash | não existe na criação | não existe na criação | `squash: false` | não use `--squash-before-merge` |
-| apagar a branch no merge | não existe | não existe | `remove_source_branch: true` | `--remove-source-branch` |
+| create | `create_pull_request` | `gh pr create` | `save_merge_request` (or `create_merge_request`) without iid | `glab mr create` |
+| update | `update_pull_request` | `gh pr edit` | `save_merge_request` (or `update_merge_request`) with `merge_request_iid` | `glab mr update` |
+| target | `base` | `--base` | `target_branch` | `--target-branch` |
+| description | `body` | `--body-file -` | `description` | `--description` |
+| draft | `draft: true` | `--draft` | `Draft: ` prefix in the title | `--draft` |
+| reviewers | `reviewers` | `--reviewer` | `reviewers` | `--reviewer` |
+| squash | does not exist on creation | does not exist on creation | `squash: false` | do not use `--squash-before-merge` |
+| delete the branch on merge | does not exist | does not exist | `remove_source_branch: true` | `--remove-source-branch` |
 
-Se o MCP não aceita revisores na criação, adicione os revisores numa atualização logo depois.
+If the MCP does not accept reviewers on creation, add the reviewers in an update right after.
 
-## Comandos da CLI
+## CLI commands
 
 GitHub:
 
 ```bash
-gh pr create --base <destino> --title '<título>' [--draft] [--reviewer <user>] --body-file - <<'EOF'
-<descrição>
+gh pr create --base <target> --title '<title>' [--draft] [--reviewer <user>] --body-file - <<'EOF'
+<description>
 EOF
 ```
 
 GitLab:
 
 ```bash
-glab mr create --target-branch <destino> --title '<título>' [--draft] [--reviewer <user>] --remove-source-branch --description "$(cat <<'EOF'
-<descrição>
+glab mr create --target-branch <target> --title '<title>' [--draft] [--reviewer <user>] --remove-source-branch --description "$(cat <<'EOF'
+<description>
 EOF
 )"
 ```
 
-Para atualizar: `gh pr edit --body-file -` ou `glab mr update --description`, com o mesmo heredoc.
+To update, run `gh pr edit --body-file -` or `glab mr update --description`, with the same heredoc.

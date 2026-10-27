@@ -1,38 +1,38 @@
 ---
 name: forge
-description: Como achar a forja (GitHub ou GitLab) e o PR/MR, o pipeline ou o projeto a partir de um link, um número ou do origin, e qual ferramenta usar (MCP da forja, CLI gh/glab ou pedido ao usuário). Usada por git:mr, git:review, git:ci, git:daily e git:release; carregue antes de falar com a forja.
+description: How to find the forge (GitHub or GitLab) and the PR/MR, the pipeline or the project from a link, a number or the origin, and which tool to use (forge MCP, gh/glab CLI or a request to the user). Used by git:mr, git:review, git:ci, git:daily and git:release. Load it before you talk to the forge.
 user-invocable: false
 ---
 
 # git:forge
 
-## Forja
+## Forge
 
-A forja sai, nesta ordem, de:
+Find the forge, in this order, from:
 
-1. um link nos argumentos ou na conversa: `github.com` é GitHub; um host com `/-/merge_requests/`, `/-/pipelines/` ou `/-/jobs/` no caminho é GitLab, mesmo em instância própria;
-2. a URL de `git remote get-url origin`, quando não há link.
+1. a link in the arguments or in the conversation: `github.com` is GitHub. A host with `/-/merge_requests/`, `/-/pipelines/` or `/-/jobs/` in the path is GitLab, even on a self-hosted instance;
+2. the URL from `git remote get-url origin`, when there is no link.
 
-Um link pode apontar para outro repo, diferente do clone atual. Nesse caso, leia tudo pela forja e não suponha nada do clone.
+A link can point to another repo, different from the current clone. In that case, read everything through the forge. Do not assume anything from the clone.
 
-## Projeto e número
+## Project and number
 
-- **GitHub**: `owner/repo` do caminho (`github.com/<owner>/<repo>/pull/<n>`, `/actions/runs/<id>`).
-- **GitLab**: o caminho até o `/-/`, sem o subpath da instância (`/gitlab`), por exemplo `devel/protocolos`. O número vem depois (`/-/merge_requests/<iid>`, `/-/pipelines/<id>`, `/-/jobs/<id>`).
-- Sem link: o projeto é o caminho do `origin`, sem o host, sem o subpath da instância e sem o `.git`.
-- Número sem link (`12`, `!12`, `#12`): é do projeto do `origin`.
+- **GitHub**: `owner/repo` from the path (`github.com/<owner>/<repo>/pull/<n>`, `/actions/runs/<id>`).
+- **GitLab**: the path up to `/-/`, without the instance subpath (`/gitlab`), for example `team/billing-api`. The number comes after it (`/-/merge_requests/<iid>`, `/-/pipelines/<id>`, `/-/jobs/<id>`).
+- No link: the project is the path of the `origin`, without the host, without the instance subpath and without `.git`.
+- A number without a link (`12`, `!12`, `#12`) belongs to the project of the `origin`.
 
-## Ferramenta
+## Tool
 
-1. Se a sessão tem um servidor MCP dessa forja, use o MCP. O nome da ferramenta tem a forma `mcp__<servidor>__<ferramenta>`, por exemplo `mcp__github__get_pull_request` ou `mcp__plugin_gitlab_gitlab__get_merge_request`. Se há mais de um servidor da mesma forja, use o do usuário, sem o prefixo `plugin_`.
-2. Se não há MCP, use a CLI: `gh` no GitHub, `glab` no GitLab. Para uma instância própria do GitLab, passe `GITLAB_HOST=<host>` ou `-R <host>/<projeto>`.
-3. Se a CLI também não serve para o que falta, use a API da forja pela CLI (`gh api`, `glab api`).
-4. Se o MCP pede autenticação, peça ao usuário para autenticar no `/mcp`. Se a CLI falta ou não tem login, mostre o comando para o usuário rodar com `!` (`! gh auth login`, `! glab auth login --hostname <host>`).
+1. If the session has an MCP server for that forge, use the MCP. The tool name has the form `mcp__<server>__<tool>`, for example `mcp__github__get_pull_request` or `mcp__plugin_gitlab_gitlab__get_merge_request`. If more than one server exists for the same forge, use the user's server, the one without the `plugin_` prefix.
+2. If there is no MCP, use the CLI: `gh` on GitHub, `glab` on GitLab. For a self-hosted GitLab instance, pass `GITLAB_HOST=<host>` or `-R <host>/<project>`.
+3. If the CLI cannot do what is missing, use the forge API through the CLI (`gh api`, `glab api`).
+4. If the MCP asks for authentication, ask the user to authenticate in `/mcp`. If the CLI is missing or has no login, ask the user for permission to install it. Then do it and check that it works. An interactive login is the exception: hand the user the ready command to run with `!` (`! gh auth login`, `! glab auth login --hostname <host>`).
 
-Escolha a ferramenta por operação: uma operação que o MCP não tem pode ir pela CLI, e o resto continua no MCP.
+Choose the tool for each operation. An operation that the MCP does not have can go through the CLI, and the rest stays on the MCP.
 
-## Nunca
+## Never
 
-- Commit pela API da forja (`create_or_update_file`, `push_files`, `delete_file`, `add_commit`). O hook `no-api-commit` nega. Use `/git:commit` e `git push`.
-- Squash, nem na criação nem no merge do PR/MR. O hook `mr-no-squash` nega.
-- Menção a IA, `Co-Authored-By` ou "Generated with" em texto publicado na forja (PR/MR, comentário, review, release).
+- A commit through the forge API (`create_or_update_file`, `push_files`, `delete_file`, `add_commit`). The `no-api-commit` hook denies it. Use `/git:commit` and `git push`.
+- Squash, on creation or on merge of the PR/MR. The `mr-no-squash` hook denies it.
+- An AI mention, `Co-Authored-By` or "Generated with" in text published on the forge (PR/MR, comment, review, release).

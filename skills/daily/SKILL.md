@@ -1,70 +1,74 @@
 ---
 name: daily
-description: Junta o que você fez desde o último dia útil (commits em todos os repos locais e PR/MR abertos, mergeados e revisados no GitHub e no GitLab) e escreve os tópicos curtos para falar na daily, no formato ontem, hoje e bloqueios.
-argument-hint: "[since:yesterday|AAAA-MM-DD] [pasta dos repos]"
+description: Collects what you did since the last business day (commits in all local repos, and PR/MR opened, merged and reviewed on GitHub and GitLab). Writes short talking points for the daily standup in the format yesterday, today and blockers, in the user's language.
+argument-hint: "[since:yesterday|YYYY-MM-DD] [repos folder]"
 ---
 
 # git:daily
 
-## Período
+Write the daily text in the user's language. If the user asks for another language, use that language.
 
-Desde o último dia útil: a segunda-feira olha desde a sexta, e os outros dias olham desde ontem. O argumento `since:` substitui o período. Calcule com `date -d 'last friday' +%F` ou `date -d yesterday +%F`.
+## Period
 
-## Coleta
+Since the last business day: on Monday, look back to Friday. On the other days, look back to yesterday. The `since:` argument replaces the period. Calculate it with `date -d 'last friday' +%F` or `date -d yesterday +%F`.
 
-1. **Commits locais** em todos os repos da pasta (padrão `~/Development`), de todas as branches, inclusive as que não têm push. Filtre pelo **nome**, não pelo e-mail: o mesmo autor costuma commitar com mais de um e-mail (o do git local e o da conta da forja, usado nos merges pela interface):
+## Collection
+
+1. **Local commits** in all repos of the folder (default `~/Development`), on all branches, including those without a push. Filter by **name**, not by e-mail. The same author often commits with more than one e-mail (the local git one and the forge account one, used for merges in the web interface):
    ```bash
    name=$(git config --global user.name)
    for repo in $(find ~/Development -maxdepth 3 -name .git -type d -prune | xargs -n1 dirname); do
-     log=$(git -C "$repo" log --all --no-merges --author="$name" --since="<desde> 00:00" --format='%ad %s%n%b' --date=format:'%a %H:%M')
+     log=$(git -C "$repo" log --all --no-merges --author="$name" --since="<since> 00:00" --format='%ad %s%n%b' --date=format:'%a %H:%M')
      [ -n "$log" ] && printf '## %s (%s)\n%s\n\n' "${repo##*/}" "$(git -C "$repo" remote get-url origin 2>/dev/null)" "$log"
    done
    ```
-   Leia também o body (`%b`): o título sozinho esconde o efeito. Commits de hoje são trabalho em andamento: vão para "Hoje", não para "Ontem".
-2. **Forjas**: separe os remotes do passo 1 por forja e consulte cada uma. Carregue a skill `git:forge` (Skill tool) para escolher a ferramenta. Se uma forja não tem MCP nem CLI com login, siga só com os commits e avise.
-   - **GitHub**: `search_pull_requests` (ou `gh search prs`) com `author:@me` e com `reviewed-by:@me`, os dois com `updated:>=<desde>`, e `review-requested:@me is:open` para as pendências. A busca já traz as datas;
+   Read the body too (`%b`). The title alone hides the effect. Commits from today are work in progress: they go under "Today", not under "Yesterday".
+2. **Forges**: split the remotes from step 1 by forge and query each one. Load the `git:forge` skill (Skill tool) to choose the tool. If a forge has no MCP and no CLI with a login, continue with the commits only and warn the user.
+   - **GitHub**: `search_pull_requests` (or `gh search prs`) with `author:@me` and with `reviewed-by:@me`, both with `updated:>=<since>`, and `review-requested:@me is:open` for the pending items. The search already returns the dates;
    - **GitLab**:
-     - seu usuário: `get_user` com `me: true`;
-     - grupos: os namespaces dos remotes (o caminho sem host, sem `/gitlab` e sem `.git`, até a última `/`, por exemplo `devel`). Consulte **por grupo** (`group_id`): a consulta pega também os projetos que você não tem clonados. O namespace pessoal (o seu username) não é grupo: consulte por `project_id`;
-     - MRs seus: `list_merge_requests` com `group_id`, `scope: created_by_me` e `state: all`;
-     - MRs em que você é revisor: a mesma consulta com `scope: review_requested`, uma vez com `state: all` e outra com `state: opened`, porque os parados há tempo não aparecem entre os recentes;
-     - **a listagem do GitLab não traz datas.** Ela vem do mais novo para o mais antigo, por **criação**. Para cada MR, `get_merge_request` dá o `updatedAt` e o `mergedAt`. Fique com os atualizados no período. Um MR criado dias antes pode ter o merge no período: só pare quando o `createdAt` for 14 dias anterior ao início do período.
-   - **O que você fez em cada PR/MR do período**: leia as notas e os reviews (`get_merge_request_notes` com `last: 100`, `get_pull_request_reviews`, `gh pr view <n> --json reviews,comments`). Conte só os seus, criados no período:
-     - comentário comum ou em linha do diff: "revisei", com o número de comentários;
-     - aprovação: "aprovei";
-     - pedido de mudança: "pedi mudanças";
-     - merge seu num PR/MR de outra pessoa: "mergeei";
-     - num PR/MR seu, as respostas e as threads resolvidas entram no tópico do próprio PR/MR.
-     PR/MR aberto em que você é revisor e não tem nota sua no período vira pendência em "Hoje". Se está aberto há mais de 2 semanas, cite a idade.
-   - **CI dos seus PR/MR abertos**: o último pipeline ou workflow run (`get_merge_request_pipelines`, `gh pr checks`). Falha é bloqueio.
-3. **Branch atual e trabalho sem commit** do repo em que o Claude está: `git status --short` e `git branch --show-current`. Isso é o "hoje" mais provável.
+     - your user: `get_user` with `me: true`;
+     - groups: the namespaces of the remotes (the path without the host, without `/gitlab` and without `.git`, up to the last `/`, for example `team`). Query **by group** (`group_id`): the query also returns the projects that you did not clone. The personal namespace (your username) is not a group: query it by `project_id`;
+     - your MRs: `list_merge_requests` with `group_id`, `scope: created_by_me` and `state: all`;
+     - MRs where you are a reviewer: the same query with `scope: review_requested`, once with `state: all` and once with `state: opened`, because MRs that have been idle for a long time do not appear among the recent ones;
+     - **the GitLab listing has no dates.** It comes from newest to oldest, by **creation**. For each MR, `get_merge_request` gives the `updatedAt` and the `mergedAt`. Keep the ones updated in the period. An MR created days before can have its merge in the period. Stop only when the `createdAt` is 14 days before the start of the period.
+   - **What you did on each PR/MR of the period**: read the notes and the reviews (`get_merge_request_notes` with `last: 100`, `get_pull_request_reviews`, `gh pr view <n> --json reviews,comments`). Count only your own, created in the period:
+     - a regular or inline comment on the diff: "reviewed", with the number of comments;
+     - an approval: "approved";
+     - a change request: "requested changes";
+     - your merge of a PR/MR from another person: "merged";
+     - on your own PR/MR, the replies and the resolved threads go in the topic of that PR/MR.
+     An open PR/MR where you are a reviewer and that has no note from you in the period becomes a pending item under "Today". If it has been open for more than 2 weeks, state its age.
+   - **CI of your open PR/MR**: the last pipeline or workflow run (`get_merge_request_pipelines`, `gh pr checks`). A failure is a blocker.
+3. **Current branch and uncommitted work** of the repo where Claude runs: `git status --short` and `git branch --show-current`. This is the most likely "today".
 
-## Escrita
+## Writing
 
-Um tópico por **projeto**, com uma linha por entrega dentro dele. Nunca junte projetos diferentes no mesmo tópico. Dentro do projeto, agrupe os commits do mesmo assunto (cinco commits de `fix(upload)` são uma linha) e fale do efeito, não do código.
+One topic per **project**, with one line per delivery inside it. Never merge different projects into the same topic. Inside a project, group the commits of the same subject (five `fix(upload)` commits are one line) and describe the effect, not the code.
 
 ```
-Ontem
+Yesterday
 - billing-api
-  - fotos dos usuários servidas de cópia local, revalidada no alfa
-  - MCP para gerenciar clientes OAuth (!19)
-- claude-plugins
-  - /git:mr pelo MCP da forja (#5)
-- revisei o MR de exportação do @ciclano (2 sugestões)
+  - user photos served from a local copy, revalidated in alpha
+  - MCP to manage OAuth clients (!19)
+- web-app
+  - /git:mr through the forge MCP (#5)
+- reviewed the export MR from @jdoe (2 suggestions)
 
-Hoje
-- terminar os testes do upload e tirar o MR do draft
-- revisar o MR !412
+Today
+- finish the upload tests and take the MR out of draft
+- review MR !412
 
-Bloqueios
-- pipeline do !398 quebrando no job de integração (ambiente de testes fora)
+Blockers
+- pipeline of !398 fails on the integration job (test environment down)
 ```
 
-- **Não omita entrega**: todo `feat`, `fix`, `perf` e `revert` do período aparece, numa linha própria ou junto com outros do mesmo assunto. Não há limite de tópicos. A concisão vem de cada linha ser curta (até cerca de 15 palavras), não de cortar trabalho.
-- Projeto que não está clonado (só apareceu na forja): descreva pelos commits do PR/MR (`get_merge_request` com `include: ["commits"]`, `gh pr view <n> --json commits`).
-- `chore`, `style`, `docs`, `test`, `ci` e `build` entram agrupados numa linha do projeto (por exemplo, "CI e deploy: ...") quando têm efeito visível. Senão, ficam de fora.
-- Commit local e PR/MR do mesmo trabalho são uma linha só. Cite o número (`!iid` no GitLab, `#n` no GitHub).
-- "Hoje" sai do que ficou em andamento: commits de hoje, PR/MR em draft, branch com commits sem PR/MR, review pendente com você e mudança sem commit.
-- "Bloqueios" só com fato concreto: CI quebrado, PR/MR parado há mais de 2 dias esperando alguém, dependência citada na conversa. Sem nada, escreva `Sem bloqueios`.
+Translate the three headings (Yesterday, Today, Blockers) to the user's language.
 
-Responda só com o texto da daily. Depois, escreva uma linha com o número de repos e de PR/MR que entraram, para conferir se faltou algo.
+- **Do not omit a delivery**: every `feat`, `fix`, `perf` and `revert` of the period appears, on its own line or together with others of the same subject. There is no limit on topics. Short lines (up to about 15 words) make the text concise. Do not cut work.
+- A project that is not cloned (it appeared only on the forge): describe it from the commits of the PR/MR (`get_merge_request` with `include: ["commits"]`, `gh pr view <n> --json commits`).
+- `chore`, `style`, `docs`, `test`, `ci` and `build` go grouped in one line of the project (for example "CI and deploy: ...") when they have a visible effect. Otherwise, leave them out.
+- A local commit and a PR/MR of the same work are one line. Cite the number (`!iid` on GitLab, `#n` on GitHub).
+- "Today" comes from what stays in progress: commits from today, draft PR/MR, a branch with commits and no PR/MR, a pending review assigned to you and a change without a commit.
+- "Blockers" has only concrete facts: broken CI, a PR/MR idle for more than 2 days while it waits for someone, a dependency cited in the conversation. If there are none, write `No blockers`.
+
+Reply with the daily text only. Then write one line with the number of repos and PR/MR that you included, so the user can check whether something is missing.

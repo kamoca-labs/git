@@ -1,172 +1,172 @@
-# Uso do plugin `git`
+# Using the `git` plugin
 
-## Sumário
+## Contents
 
-- [Commitar o que está pendente](#commitar-o-que-está-pendente)
-- [Commitar e encadear outro comando](#commitar-e-encadear-outro-comando)
-- [Abrir o PR/MR](#abrir-o-prmr)
-- [Revisar o PR/MR de outra pessoa](#revisar-o-prmr-de-outra-pessoa)
-- [Diagnosticar o CI](#diagnosticar-o-ci)
-- [Escrever a daily](#escrever-a-daily)
-- [Lançar uma versão](#lançar-uma-versão)
-- [Dar instruções extras](#dar-instruções-extras)
-- [Hotfix direto na main](#hotfix-direto-na-main)
-- [Quando o hook nega](#quando-o-hook-nega)
-- [Consultar a auditoria](#consultar-a-auditoria)
+- [Commit what is pending](#commit-what-is-pending)
+- [Commit and chain another command](#commit-and-chain-another-command)
+- [Open the PR/MR](#open-the-prmr)
+- [Review the PR/MR of another person](#review-the-prmr-of-another-person)
+- [Diagnose the CI](#diagnose-the-ci)
+- [Write the daily](#write-the-daily)
+- [Release a version](#release-a-version)
+- [Give extra instructions](#give-extra-instructions)
+- [Hotfix directly on main](#hotfix-directly-on-main)
+- [When the hook denies](#when-the-hook-denies)
+- [Check the audit](#check-the-audit)
 
-## Commitar o que está pendente
+## Commit what is pending
 
 ```
 /git:commit
 ```
 
-O Claude lê `git status`, o diff e a conversa, separa as mudanças por assunto e gera um commit por assunto:
+Claude reads `git status`, the diff and the conversation. It separates the changes by subject and makes one commit per subject:
 
 ```
 fix(upload): reject files above the size limit
 
-Por quê: anexos acima de 10 MB travavam a fila de processamento.
-O que: valida o tamanho antes de enfileirar e devolve 422 com a mensagem.
+Why: attachments above 10 MB blocked the processing queue.
+What: validates the size before queueing and returns 422 with the message.
 ```
 
-Se você estiver na main, ele cria uma branch (`fix/rejeitar-anexo-grande`) antes de commitar.
+If you are on main, Claude creates a branch (`fix/reject-large-attachment`) before it commits.
 
-## Commitar e encadear outro comando
+## Commit and chain another command
 
 ```
-/git:commit /<plugin>:<comando> @fulano
+/git:commit /<plugin>:<command> @jdoe
 ```
 
-Faz os commits e o push, depois invoca o comando do outro plugin com o resto dos argumentos (abrir o PR/MR com revisor, por exemplo). O `git` não depende de nenhum plugin: qualquer um instalado serve.
+It makes the commits and the push. Then it invokes the command from the other plugin with the rest of the arguments (for example, to open the PR/MR with a reviewer). The `git` plugin does not depend on any plugin: any installed plugin works.
 
-## Abrir o PR/MR
+## Open the PR/MR
 
 ```
 /git:mr
-/git:mr @fulano @ciclano
+/git:mr @jdoe @asmith
 /git:mr @auto draft
 /git:mr target:feat/upload-1
 /git:commit /git:mr @auto
 ```
 
-O Claude abre o PR/MR da branch no GitHub ou no GitLab, conforme o `origin`. Se a sessão tem o MCP da forja, ele usa o MCP. Se não tem, ele usa a CLI (`gh` ou `glab`).
+Claude opens the PR/MR of the branch on GitHub or GitLab, according to the `origin`. If the session has the forge MCP, Claude uses the MCP. If it does not, Claude uses the CLI (`gh` or `glab`).
 
-O título segue o commit. A descrição tem duas seções obrigatórias e duas opcionais:
+The title follows the commit. The description has two required sections and two optional ones:
 
 ```markdown
-## Por quê
+## Why
 
-Anexos acima de 10 MB travavam a fila de processamento.
+Attachments above 10 MB blocked the processing queue.
 
-## O que muda
+## What changes
 
-- Valida o tamanho antes de enfileirar e devolve 422.
+- Validates the size before queueing and returns 422.
 
-## Como testar
+## How to test
 
-Envie um anexo de 11 MB e confira a resposta 422.
+Send an 11 MB attachment and check the 422 response.
 ```
 
-- `@fulano`: adiciona o revisor pelo username.
-- `@auto`: adiciona os dois autores mais frequentes dos arquivos alterados, sem você.
-- `draft`: abre como rascunho (`--draft` ou `Draft: ` no título do GitLab).
-- `target:<branch>`: troca a branch de destino. O `/git:split` usa este argumento em cada parte.
+- `@jdoe`: adds the reviewer by username.
+- `@auto`: adds the two most frequent authors of the changed files, without you.
+- `draft`: opens it as a draft (`--draft`, or `Draft: ` in the GitLab title).
+- `target:<branch>`: changes the target branch. The `/git:split` command uses this argument on each part.
 
-O PR/MR nunca usa squash, nem na criação nem no merge. No GitLab, o MR sai com a opção de apagar a branch de origem no merge.
+The PR/MR never uses squash, on creation or on merge. On GitLab, the MR has the option to delete the source branch on merge.
 
-## Revisar o PR/MR de outra pessoa
+## Review the PR/MR of another person
 
 ```
-/git:review https://github.com/kamoca/app/pull/12
-/git:review https://gitlab.exemplo.com/devel/app/-/merge_requests/34 foca na migration
+/git:review https://github.com/acme/app/pull/12
+/git:review https://gitlab.example.com/team/app/-/merge_requests/34 focus on the migration
 /git:review 12 approve
 /git:review
 ```
 
-O Claude lê o diff, as discussões e o contexto que você passa, e mostra os achados (`arquivo:linha`, gravidade e comentário). Nada é publicado antes da sua confirmação. Depois, os achados saem num único review, com comentários em linha. Sem argumento, ele procura os PR/MR em que você é revisor.
+Claude reads the diff, the discussions and the context that you pass. It shows the findings (`file:line`, severity and comment). Nothing is published before your confirmation. Then the findings go out in a single review, with inline comments. With no argument, Claude looks for the PR/MR where you are a reviewer.
 
-## Diagnosticar o CI
+## Diagnose the CI
 
 ```
 /git:ci
-/git:ci https://github.com/kamoca/app/actions/runs/123
+/git:ci https://github.com/acme/app/actions/runs/123
 /git:ci !34 retry
 ```
 
-Uma linha por job que falhou: a causa, o trecho do log que prova a causa e a correção. O `retry` só roda de novo quando todas as falhas são intermitentes.
+One line per failed job: the cause, the log excerpt that proves the cause and the fix. `retry` runs again only when all failures are intermittent.
 
-## Escrever a daily
+## Write the daily
 
 ```
 /git:daily
 /git:daily since:2026-10-16
 ```
 
-O Claude junta os seus commits de todos os repos em `~/Development` e os PR/MR do GitHub e do GitLab, e escreve os tópicos de ontem, hoje e bloqueios.
+Claude collects your commits from all repos in `~/Development` and the PR/MR from GitHub and GitLab. It writes the topics for yesterday, today and blockers in your language.
 
-## Lançar uma versão
+## Release a version
 
 ```
 /git:release
 /git:release minor rc
 ```
 
-O Claude calcula a versão pelos commits, mostra o changelog e espera o seu ok. Depois, cria a tag anotada, faz o push só da tag e cria a release na forja.
+Claude calculates the version from the commits, shows the changelog and waits for your approval. Then it creates the annotated tag, pushes only the tag and creates the release on the forge.
 
-## Dar instruções extras
+## Give extra instructions
 
-Tudo que não é modificador vira instrução:
+Everything that is not a modifier becomes an instruction:
 
 ```
-/git:commit só os arquivos do backend, deixa o frontend para depois
-/git:commit separa a migration do resto
+/git:commit only the backend files, leave the frontend for later
+/git:commit separate the migration from the rest
 ```
 
-## Hotfix direto na main
+## Hotfix directly on main
 
 ```
 /git:commit /git:main
 ```
 
-1. O Claude escreve a justificativa e o risco no body e commita sem pedir confirmação (o `/git:main` já é a autorização).
-2. O commit sai com os trailers:
+1. Claude writes the justification and the risk in the body and commits without a confirmation request (`/git:main` is already the authorization).
+2. The commit has the trailers:
 
 ```
 fix: restore login after expired certificate
 
-Por quê: produção fora do ar, sem tempo para ciclo de PR/MR.
-O que: troca o certificado vencido pelo renovado.
+Why: production is down and there is no time for a PR/MR cycle.
+What: replaces the expired certificate with the renewed one.
 
-Main-Justification: incidente em produção, login indisponível para todos
-Main-Risk: sem revisão; reverter com git revert <hash>
+Main-Justification: production incident, login unavailable for everyone
+Main-Risk: no review; revert with git revert <hash>
 ```
 
-3. O commit vai para `~/.claude/git-main-audit.log`.
+3. The commit goes to `~/.claude/git-main-audit.log`.
 
-O `/git:main` vale só para o prompt em que foi digitado. No prompt seguinte, a main volta a ficar protegida.
+`/git:main` holds only for the prompt where you typed it. In the next prompt, main is protected again.
 
-## Quando o hook nega
+## When the hook denies
 
-O Claude recebe `[git:<regra>] motivo` (todas as regras violadas de uma vez), corrige e tenta de novo:
+Claude receives `[git:<rule>] reason` (all the violated rules at once), fixes the problem and tries again:
 
-| Mensagem do hook | Chamada negada | Correção |
+| Hook message | Denied call | Fix |
 |---|---|---|
-| `Título fora do padrão semântico` | `atualiza README` | `docs: update install steps` |
-| `Conjunção (e/and/&/+) no título` | `feat: add export and import` | dois commits: `feat: add export`, `feat: add import` |
-| `Título com 81 chars, máximo 72` | título longo | encurte; o detalhe vai para o body |
-| `Body obrigatório` | `fix: typo` sem body | body com por quê e o quê |
-| `Linha do body acima de 100 chars` | parágrafo numa linha | quebre a linha |
-| `Co-author/atribuição não é permitida` | `Co-Authored-By: ...` | remova o trailer |
-| `Commit direto na main só com /git:main` | commit na main | crie uma branch ou use `/git:main` |
-| `Mensagem não encontrada` | `git commit` sem `-m` | `git commit -F - <<'EOF' ... EOF` |
-| `PR/MR sem menção a IA` | descrição com `Generated with [Claude Code]` | remova a linha |
-| `Título do PR/MR fora do padrão semântico` | `ajusta upload` | `fix(upload): reject large files` |
-| `Descrição do PR/MR sem as seções obrigatórias: ## O que muda` | descrição só com o porquê | adicione a seção |
-| `Squash nunca` | `gh pr merge --squash` | `gh pr merge --merge` |
-| `Passe squash: false ao criar o MR` | `save_merge_request` sem `squash` | adicione `squash: false` |
-| `Commit pela API da forja` | `create_or_update_file` no MCP do GitHub | `/git:commit` e `git push` |
+| `Title does not follow the semantic format` | `update README` | `docs: update install steps` |
+| `Conjunction (and/&/+) in the title` | `feat: add export and import` | two commits: `feat: add export`, `feat: add import` |
+| `Title has 81 chars, maximum 72` | a long title | shorten it; the detail goes in the body |
+| `Body required` | `fix: typo` without a body | a body with why and what |
+| `Body line above 100 chars` | a paragraph on one line | wrap the line |
+| `Co-author or attribution lines are not allowed` | `Co-Authored-By: ...` | remove the trailer |
+| `A commit on main needs /git:main in your prompt` | a commit on main | create a branch or use `/git:main` |
+| `Message not found` | `git commit` without `-m` | `git commit -F - <<'EOF' ... EOF` |
+| `PR/MR text must not mention AI` | a description with `Generated with [Claude Code]` | remove the line |
+| `PR/MR title does not follow the semantic format` | `tweak upload` | `fix(upload): reject large files` |
+| `PR/MR description is missing the required sections: ## What changes` | a description with only the why | add the section |
+| `Never squash` | `gh pr merge --squash` | `gh pr merge --merge` |
+| `Pass squash: false when you create the MR` | `save_merge_request` without `squash` | add `squash: false` |
+| `A commit through the forge API skips the commit rules` | `create_or_update_file` on the GitHub MCP | `/git:commit` |
 
-## Consultar a auditoria
+## Check the audit
 
 ```bash
 column -t -s $'\t' ~/.claude/git-main-audit.log

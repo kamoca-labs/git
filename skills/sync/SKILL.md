@@ -1,21 +1,21 @@
 ---
 name: sync
-description: Depois do merge, volta para a branch padrão atualizada e apaga a branch local já mergeada. Se a branch ainda não foi mergeada, fica nela e puxa o que chegou no remoto. Deixa o repo pronto para seguir o trabalho.
+description: After the merge, goes back to the updated default branch and deletes the local branch that is already merged. If the branch is not merged yet, it stays on it and pulls what arrived on the remote. Leaves the repo ready to continue the work.
 argument-hint: "[branch]"
 ---
 
 # git:sync
 
-A detecção de merge confia no histórico: ela pressupõe merge sem squash, em que os commits da branch chegam à branch padrão do jeito que foram feitos. O hook `mr-no-squash` garante isso nos PR/MR feitos pelo Claude. Branch mergeada com squash por outra pessoa aparece como não mergeada (passo 6).
+The merge detection relies on the history. It assumes a merge without squash, where the commits of the branch reach the default branch as they were made. The `mr-no-squash` hook guarantees this for the PR/MR that Claude makes. A branch that another person merged with squash looks like a branch that is not merged (step 6).
 
-## Passos
+## Steps
 
-1. Working tree limpo (`git status --short`). Se houver mudança, pare e ofereça `/git:commit` ou `git stash`. Nunca descarte.
-2. `git fetch --prune origin`. A branch padrão vem de `git symbolic-ref --short refs/remotes/origin/HEAD`, sem o `origin/`.
-3. Branch a sincronizar: o argumento ou a atual. Se já for a padrão, só `git pull --ff-only` e pule para o passo 6.
-4. **Mergeada?** `git merge-base --is-ancestor <branch> origin/<padrão>`:
-   - **sim**: `git switch <padrão>`, `git pull --ff-only` e `git branch -d <branch>`. Use `-d`, nunca `-D`: se o git recusar, a branch tem commit fora da padrão; pare e mostre quais (`git log origin/<padrão>..<branch> --oneline`);
-   - **não**: fique na branch e traga o que chegou no remoto (sugestão aplicada na revisão, commit de colega) com `git pull --ff-only`. Se divergiu, mostre os commits de cada lado e pergunte antes de `git pull --rebase`. Diga que a branch ainda não foi mergeada.
-5. Se a branch remota ainda existir depois do merge (`git ls-remote --heads origin <branch>`), avise: o merge não apagou a branch de origem. Não apague o remoto sem pedir.
-6. Outras branches locais já mergeadas: liste com `git branch --merged origin/<padrão>`, sem a padrão e sem a atual, e apague com `git branch -d`. Branch cujo remoto sumiu (`git branch -vv` com `gone`) mas que **não** está mergeada fica: diga o nome e que pode ter sido fechada sem merge ou mergeada com squash.
-7. Reporte em uma linha: branch atual, commits puxados, branches apagadas.
+1. The working tree must be clean (`git status --short`). If there are changes, stop and offer `/git:commit` or `git stash`. Never discard them.
+2. Run `git fetch --prune origin`. The default branch comes from `git symbolic-ref --short refs/remotes/origin/HEAD`, without the `origin/`.
+3. Branch to sync: the argument or the current one. If it is already the default branch, run only `git pull --ff-only` and skip to step 6.
+4. **Merged?** Run `git merge-base --is-ancestor <branch> origin/<default>`:
+   - **yes**: run `git switch <default>`, `git pull --ff-only` and `git branch -d <branch>`. Use `-d`, never `-D`. If git refuses, the branch has a commit that is not in the default branch: stop and show which ones (`git log origin/<default>..<branch> --oneline`);
+   - **no**: stay on the branch and bring what arrived on the remote (a suggestion applied in the review, a commit from a colleague) with `git pull --ff-only`. If the branch diverged, show the commits of each side and ask before `git pull --rebase`. Say that the branch is not merged yet.
+5. If the remote branch still exists after the merge (`git ls-remote --heads origin <branch>`), warn the user: the merge did not delete the source branch. Do not delete the remote branch without asking.
+6. Other local branches that are already merged: list them with `git branch --merged origin/<default>`, without the default branch and without the current one, and delete them with `git branch -d`. A branch whose remote is gone (`git branch -vv` with `gone`) but that is **not** merged stays. Tell the user its name and say that it can have been closed without a merge, or merged with squash.
+7. Report in one line: the current branch, the commits pulled and the branches deleted.
