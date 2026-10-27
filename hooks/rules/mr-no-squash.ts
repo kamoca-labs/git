@@ -16,8 +16,8 @@ const asksSquash = CLI_SQUASH_MERGE.test(command)
   || (GITHUB_MERGE.test(tool_name) && tool_input.merge_method === 'squash')
 
 if (asksSquash) {
-  deny('mr-no-squash', 'Squash nunca: o histórico semântico de cada commit vai para a branch padrão como está.')
+  deny('mr-no-squash', 'Never squash: the semantic history of each commit goes to the default branch as it is.')
 }
 if (isGitlab && mergeRequest(input)?.isCreate && tool_input.squash !== false) {
-  deny('mr-no-squash', 'Passe squash: false ao criar o MR, para não herdar o squash padrão do projeto.')
+  deny('mr-no-squash', 'Pass squash: false when you create the MR, so it does not inherit the project squash default.')
 }

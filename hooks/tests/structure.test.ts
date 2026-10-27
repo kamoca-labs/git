@@ -8,19 +8,19 @@ const rules = fs.readdirSync(path.join(HOOKS_DIR, 'rules')).map((file) => path.b
 const hooksJson = fs.readFileSync(path.join(HOOKS_DIR, 'hooks.json'), 'utf8')
 const wired = [...hooksJson.matchAll(/rules\/([\w-]+)\.ts/g)].map((match) => match[1])
 
-test('toda regra tem hook dedicado no hooks.json', () => {
+test('every rule has a dedicated hook in hooks.json', () => {
   assert.deepStrictEqual(rules.filter((rule) => !wired.includes(rule)), [])
 })
 
-test('todo hook do hooks.json aponta para uma regra que existe', () => {
+test('every hook in hooks.json points to a rule that exists', () => {
   assert.deepStrictEqual(wired.filter((rule) => !rules.includes(rule)), [])
 })
 
-test('cada regra aparece uma vez só no hooks.json', () => {
+test('each rule appears only once in hooks.json', () => {
   assert.strictEqual(new Set(wired).size, wired.length)
 })
 
-test('toda regra tem teste próprio', () => {
+test('every rule has its own test', () => {
   const missing = rules.filter((rule) => !fs.existsSync(path.join(import.meta.dirname, `${rule}.test.ts`)))
   assert.deepStrictEqual(missing, [])
 })

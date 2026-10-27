@@ -1,31 +1,31 @@
 ---
 name: split
-description: Quebra uma branch grande em branches menores e encadeadas, uma por assunto, cada uma pronta para um PR/MR pequeno. A branch original fica intacta.
-argument-hint: "[branch] [/<plugin>:<comando> ...]"
+description: Splits a large branch into smaller chained branches, one per subject, each ready for a small PR/MR. The original branch stays untouched.
+argument-hint: "[branch] [/<plugin>:<command> ...]"
 ---
 
 # git:split
 
-A branch original **nunca** é alterada nem apagada: ela é o backup. Tudo sai em branches novas.
+**Never** change or delete the original branch. It is the backup. Everything goes into new branches.
 
-## Passos
+## Steps
 
-1. Working tree limpo (`git status`). Se não estiver, pare e peça para commitar ou fazer stash.
-2. Descubra a base: `git fetch origin` e `git merge-base origin/<branch-padrão> <branch>`. A branch padrão vem de `git symbolic-ref --short refs/remotes/origin/HEAD`.
-3. Leia o que a branch muda: `git log --reverse --format='%h %s' <base>..<branch>` e `git diff --stat <base>...<branch>`.
-4. Proponha as partes, em ordem de dependência (o que é base vem primeiro):
-   - cada parte com um assunto só, revisável sozinha, de preferência abaixo de ~400 linhas;
-   - refactor e renomeação antes da feature que depende deles;
-   - testes junto com o código que testam.
-   Mostre a lista (`<n>. <tipo>/<assunto-kebab>`: commits ou arquivos de cada uma) e espere a confirmação.
-5. Monte cada parte a partir da anterior (a primeira sai da base):
+1. The working tree must be clean (`git status`). If it is not, stop and ask the user to commit or stash.
+2. Find the base: `git fetch origin` and `git merge-base origin/<default-branch> <branch>`. The default branch comes from `git symbolic-ref --short refs/remotes/origin/HEAD`.
+3. Read what the branch changes: `git log --reverse --format='%h %s' <base>..<branch>` and `git diff --stat <base>...<branch>`.
+4. Propose the parts, in dependency order (the base comes first):
+   - each part has one subject only, can be reviewed alone and preferably has fewer than ~400 lines;
+   - a refactor and a rename come before the feature that depends on them;
+   - tests stay with the code that they test.
+   Show the list (`<n>. <type>/<subject-kebab>`: the commits or files of each part) and wait for the confirmation.
+5. Build each part from the previous one (the first one comes from the base):
    ```bash
-   git switch -c <tipo>/<assunto>-<n> <parte-anterior|base>
+   git switch -c <type>/<subject>-<n> <previous-part|base>
    ```
-   - commits já atômicos: `git cherry-pick <hash>...`;
-   - commit misturando assuntos: `git checkout <branch> -- <arquivos>` e commite pela skill `git:commit` (Skill tool).
-   Arquivo que entra em mais de uma parte: aplique só os hunks da parte com `git diff <base> <branch> -- <arquivo>` num arquivo temporário (`mktemp`), edite o patch e `git apply`.
-6. Confira que a última parte reproduz a original: `git diff <última-parte> <branch>` tem que sair vazio. Se não sair, mostre o que falta e corrija antes de seguir.
-7. `git push -u origin <parte>` para cada uma.
-8. Com um comando nos argumentos (`/git:mr`, por exemplo), invoque essa skill (Skill tool) para cada parte, na ordem, com `target:<parte-anterior>`. A primeira parte mira a branch padrão. Peça para citar o PR/MR anterior em "Referências".
-9. Devolva a cadeia (`parte 1 ← parte 2 ← ...`) e lembre que o merge vai na ordem: depois do merge da parte 1, GitHub e GitLab redirecionam a parte 2 para a branch padrão sozinhos se a branch da 1 for removida.
+   - commits that are already atomic: `git cherry-pick <hash>...`;
+   - a commit that mixes subjects: `git checkout <branch> -- <files>` and commit with the `git:commit` skill (Skill tool).
+   A file that goes into more than one part: apply only the hunks of that part. Run `git diff <base> <branch> -- <file>` into a temporary file (`mktemp`), edit the patch and run `git apply`.
+6. Check that the last part reproduces the original: `git diff <last-part> <branch>` must be empty. If it is not, show what is missing and fix it before you continue.
+7. Run `git push -u origin <part>` for each part.
+8. With a command in the arguments (`/git:mr`, for example), invoke that skill (Skill tool) for each part, in order, with `target:<previous-part>`. The first part targets the default branch. Ask it to cite the previous PR/MR under "References".
+9. Return the chain (`part 1 ← part 2 ← ...`) and remind the user that the merge goes in order. After the merge of part 1, GitHub and GitLab retarget part 2 to the default branch by themselves if the branch of part 1 is removed.

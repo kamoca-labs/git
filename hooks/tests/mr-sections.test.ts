@@ -3,27 +3,34 @@ import { allowed, denied, MERGE_REQUEST_CREATES, MERGE_REQUEST_WRITES, MR_DESCRI
 
 const RULE = 'mr-sections'
 
-test('aceita descrição com Por quê e O que muda', () => {
+test('accepts a description with Why and What changes', () => {
   for (const write of MERGE_REQUEST_WRITES) {
     allowed(sandbox().call(RULE, write({ title: MR_TITLE, description: MR_DESCRIPTION })))
   }
 })
 
-test('aceita as seções opcionais depois das obrigatórias', () => {
-  const description = `${MR_DESCRIPTION}\n\n## Como testar\n\nEnvie um anexo de 11 MB.\n\n## Referências\n\nPR #12.`
+test('accepts the optional sections after the required ones', () => {
+  const description = `${MR_DESCRIPTION}\n\n## How to test\n\nSend an 11 MB attachment.\n\n## References\n\nPR #12.`
   allowed(sandbox().call(RULE, MERGE_REQUEST_CREATES[0]({ title: MR_TITLE, description })))
 })
 
-test('nega descrição sem as seções obrigatórias e cita as que faltam', () => {
-  const withoutChanges = '## Por quê\n\nAnexos acima de 10 MB travavam a fila de processamento e o worker caía.'
+test('denies a description without the required sections and names the missing ones', () => {
+  const withoutChanges = '## Why\n\nAttachments above 10 MB blocked the processing queue and crashed the worker.'
   for (const write of MERGE_REQUEST_WRITES) {
-    denied(sandbox().call(RULE, write({ title: MR_TITLE, description: withoutChanges })), /\[git:mr-sections\].*## O que muda/)
+    denied(sandbox().call(RULE, write({ title: MR_TITLE, description: withoutChanges })), /\[git:mr-sections\].*## What changes/)
   }
-  denied(sandbox().call(RULE, MERGE_REQUEST_CREATES[0]({ description: 'Texto solto sem seção nenhuma.' })), /## Por quê, ## O que muda/)
+  denied(sandbox().call(RULE, MERGE_REQUEST_CREATES[0]({ description: 'Loose text without any section.' })), /## Why, ## What changes/)
 })
 
-test('PR/MR sem descrição na chamada fica com o mr-description', () => {
+test('a PR/MR call without a description is left to mr-description', () => {
   for (const write of MERGE_REQUEST_WRITES) {
     allowed(sandbox().call(RULE, write({ title: MR_TITLE })))
+  }
+})
+
+test('still accepts the Portuguese section names', () => {
+  const description = '## Por quê\n\nAnexos acima de 10 MB travavam a fila de processamento.\n\n## O que muda\n\n- Valida o tamanho antes de enfileirar.'
+  for (const write of MERGE_REQUEST_WRITES) {
+    allowed(sandbox().call(RULE, write({ title: MR_TITLE, description })))
   }
 })

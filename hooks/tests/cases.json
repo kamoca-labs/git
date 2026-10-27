@@ -1,24 +1,24 @@
 [
   {
-    "description": "commit simples em branch passa por todas as regras",
+    "description": "a simple commit on a branch passes all rules",
     "origin": "usage",
     "branch": "feat/x",
     "prompt": "/git:commit",
     "tool_name": "Bash",
-    "tool_input": { "command": "git commit -F - <<'EOF'\nfix(upload): reject files above the size limit\n\nPor quê: anexos acima de 10 MB travavam a fila de processamento.\nO que: valida o tamanho antes de enfileirar e devolve 422.\nEOF" },
+    "tool_input": { "command": "git commit -F - <<'EOF'\nfix(upload): reject files above the size limit\n\nWhy: attachments above 10 MB blocked the processing queue.\nWhat: validates the size before queueing and returns 422.\nEOF" },
     "deny": []
   },
   {
-    "description": "commit com -m duplo (título e body) passa",
+    "description": "a commit with a double -m (title and body) passes",
     "origin": "usage",
     "branch": "feat/x",
     "prompt": "/git:commit",
     "tool_name": "Bash",
-    "tool_input": { "command": "git commit -m \"fix: handle null owner\" -m \"Por quê: setor sem dono quebrava a listagem.\"" },
+    "tool_input": { "command": "git commit -m \"fix: handle null owner\" -m \"Why: a sector without an owner broke the listing.\"" },
     "deny": []
   },
   {
-    "description": "título com conjunção e sem body viola duas regras de uma vez",
+    "description": "a title with a conjunction and no body breaks two rules at once",
     "origin": "usage",
     "branch": "feat/x",
     "prompt": "/git:commit",
@@ -27,25 +27,25 @@
     "deny": ["single-item-commit", "commit-body"]
   },
   {
-    "description": "título fora do padrão semântico",
+    "description": "a title that does not follow the semantic format",
     "origin": "usage",
     "branch": "feat/x",
     "prompt": "/git:commit",
     "tool_name": "Bash",
-    "tool_input": { "command": "git commit -F - <<'EOF'\natualiza README\n\nPor quê: o passo de instalação estava desatualizado.\nEOF" },
+    "tool_input": { "command": "git commit -F - <<'EOF'\nupdate README\n\nWhy: the install step was outdated.\nEOF" },
     "deny": ["semantic-title"]
   },
   {
-    "description": "trailer de co-author",
+    "description": "a co-author trailer",
     "origin": "usage",
     "branch": "feat/x",
     "prompt": "/git:commit",
     "tool_name": "Bash",
-    "tool_input": { "command": "git commit -F - <<'EOF'\nfeat: add endpoint\n\nPor quê: o front precisa listar setores.\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF" },
+    "tool_input": { "command": "git commit -F - <<'EOF'\nfeat: add endpoint\n\nWhy: the frontend needs to list sectors.\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF" },
     "deny": ["no-co-author"]
   },
   {
-    "description": "commit sem mensagem abriria o editor",
+    "description": "a commit without a message would open the editor",
     "origin": "usage",
     "branch": "feat/x",
     "prompt": "/git:commit",
@@ -54,34 +54,34 @@
     "deny": ["commit-message-readable"]
   },
   {
-    "description": "commit na main sem /git:main",
+    "description": "a commit on main without /git:main",
     "origin": "usage",
     "branch": "main",
     "prompt": "/git:commit",
     "tool_name": "Bash",
-    "tool_input": { "command": "git commit -F - <<'EOF'\nfix: restore login\n\nPor quê: produção fora do ar.\nO que: troca o certificado vencido.\nEOF" },
+    "tool_input": { "command": "git commit -F - <<'EOF'\nfix: restore login\n\nWhy: production is down.\nWhat: replaces the expired certificate.\nEOF" },
     "deny": ["protected-branch-commit"]
   },
   {
-    "description": "hotfix na main com /git:main e trailers passa",
+    "description": "a hotfix on main with /git:main and trailers passes",
     "origin": "usage",
     "branch": "main",
     "prompt": "<command-name>/git:commit</command-name>\n<command-args>/git:main</command-args>",
     "tool_name": "Bash",
-    "tool_input": { "command": "git commit -F - <<'EOF'\nfix: restore login after expired certificate\n\nPor quê: produção fora do ar, sem tempo para ciclo de MR.\nO que: troca o certificado vencido pelo renovado.\n\nMain-Justification: incidente em produção\nMain-Risk: sem revisão; reverter com git revert\nEOF" },
+    "tool_input": { "command": "git commit -F - <<'EOF'\nfix: restore login after expired certificate\n\nWhy: production is down and there is no time for a MR cycle.\nWhat: replaces the expired certificate with the renewed one.\n\nMain-Justification: production incident\nMain-Risk: no review; revert with git revert\nEOF" },
     "deny": []
   },
   {
-    "description": "/git:main sem os trailers",
+    "description": "/git:main without the trailers",
     "origin": "usage",
     "branch": "main",
     "prompt": "/git:commit /git:main",
     "tool_name": "Bash",
-    "tool_input": { "command": "git commit -F - <<'EOF'\nfix: restore login\n\nPor quê: produção fora do ar, sem tempo para MR.\nEOF" },
+    "tool_input": { "command": "git commit -F - <<'EOF'\nfix: restore login\n\nWhy: production is down and there is no time for a MR.\nEOF" },
     "deny": ["protected-branch-commit"]
   },
   {
-    "description": "push da branch de trabalho passa",
+    "description": "the working branch is pushed without a denial",
     "origin": "usage",
     "branch": "feat/x",
     "prompt": "/git:commit",
@@ -90,7 +90,7 @@
     "deny": []
   },
   {
-    "description": "push para a main a partir de outra branch",
+    "description": "a push to main from another branch",
     "origin": "usage",
     "branch": "feat/x",
     "prompt": "/git:commit",
@@ -99,7 +99,7 @@
     "deny": ["protected-branch-push"]
   },
   {
-    "description": "comando com $VAR disparou o hook pelo if best-effort sem ser commit",
+    "description": "a command with $VAR triggered the hook through the best-effort if without being a commit",
     "origin": "real 2026-10-06",
     "branch": "main",
     "prompt": "/git:commit",
@@ -108,7 +108,16 @@
     "deny": []
   },
   {
-    "description": "PR/MR com por quê e o que muda passa por todas as regras",
+    "description": "a PR/MR with Why and What changes passes all rules",
+    "origin": "usage",
+    "branch": "feat/x",
+    "prompt": "/git:mr",
+    "tool_name": "Bash",
+    "tool_input": { "command": "gh pr create --base main --title 'fix(upload): reject files above the size limit' --body-file - <<'EOF'\n## Why\n\nAttachments above 10 MB blocked the queue.\n\n## What changes\n\n- Validates the size before queueing.\nEOF" },
+    "deny": []
+  },
+  {
+    "description": "a PR/MR with the Portuguese section names still passes",
     "origin": "usage",
     "branch": "feat/x",
     "prompt": "/git:mr",
@@ -117,57 +126,57 @@
     "deny": []
   },
   {
-    "description": "PR/MR com rodapé de atribuição a IA",
+    "description": "a PR/MR with an AI attribution footer",
     "origin": "usage",
     "branch": "feat/x",
     "prompt": "/git:mr",
     "tool_name": "Bash",
-    "tool_input": { "command": "gh pr create --base main --title 'fix(upload): reject files above the size limit' --body-file - <<'EOF'\n## Por quê\n\nAnexos acima de 10 MB travavam a fila.\n\n## O que muda\n\n- Valida o tamanho antes de enfileirar.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\nEOF" },
+    "tool_input": { "command": "gh pr create --base main --title 'fix(upload): reject files above the size limit' --body-file - <<'EOF'\n## Why\n\nAttachments above 10 MB blocked the queue.\n\n## What changes\n\n- Validates the size before queueing.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\nEOF" },
     "deny": ["mr-no-ai"]
   },
   {
-    "description": "PR/MR sem seções e com título fora do padrão viola duas regras",
+    "description": "a PR/MR without sections and with a non-semantic title breaks two rules",
     "origin": "usage",
     "branch": "feat/x",
     "prompt": "/git:mr",
     "tool_name": "Bash",
-    "tool_input": { "command": "glab mr create --target-branch main --title 'ajusta upload' --description \"$(cat <<'EOF'\nAnexos acima de 10 MB travavam a fila. Agora o tamanho é validado antes de enfileirar.\nEOF\n)\"" },
+    "tool_input": { "command": "glab mr create --target-branch main --title 'tweak upload' --description \"$(cat <<'EOF'\nAttachments above 10 MB blocked the queue. Now the size is validated before queueing.\nEOF\n)\"" },
     "deny": ["mr-semantic-title", "mr-sections"]
   },
   {
-    "description": "PR criado pelo MCP do GitHub passa por todas as regras",
+    "description": "a PR created through the GitHub MCP passes all rules",
     "origin": "usage",
     "branch": "feat/x",
     "prompt": "/git:mr",
     "tool_name": "mcp__github__create_pull_request",
-    "tool_input": { "owner": "kamoca", "repo": "app", "head": "fix/upload", "base": "main", "draft": true, "title": "fix(upload): reject files above the size limit", "body": "## Por quê\n\nAnexos acima de 10 MB travavam a fila.\n\n## O que muda\n\n- Valida o tamanho antes de enfileirar." },
+    "tool_input": { "owner": "acme", "repo": "app", "head": "fix/upload", "base": "main", "draft": true, "title": "fix(upload): reject files above the size limit", "body": "## Why\n\nAttachments above 10 MB blocked the queue.\n\n## What changes\n\n- Validates the size before queueing." },
     "deny": []
   },
   {
-    "description": "MR criado pelo MCP do GitLab sem squash explícito",
+    "description": "a MR created through the GitLab MCP without an explicit squash",
     "origin": "usage",
     "branch": "feat/x",
     "prompt": "/git:mr draft",
     "tool_name": "mcp__plugin_gitlab_gitlab__save_merge_request",
-    "tool_input": { "project_id": "kamoca/app", "source_branch": "fix/upload", "target_branch": "main", "remove_source_branch": true, "title": "Draft: fix(upload): reject files above the size limit", "description": "## Por quê\n\nAnexos acima de 10 MB travavam a fila.\n\n## O que muda\n\n- Valida o tamanho antes de enfileirar." },
+    "tool_input": { "project_id": "acme/app", "source_branch": "fix/upload", "target_branch": "main", "remove_source_branch": true, "title": "Draft: fix(upload): reject files above the size limit", "description": "## Why\n\nAttachments above 10 MB blocked the queue.\n\n## What changes\n\n- Validates the size before queueing." },
     "deny": ["mr-no-squash"]
   },
   {
-    "description": "merge com squash pelo MCP do GitHub",
+    "description": "a merge with squash through the GitHub MCP",
     "origin": "usage",
     "branch": "feat/x",
-    "prompt": "faz o merge do PR",
+    "prompt": "merge the PR",
     "tool_name": "mcp__github__merge_pull_request",
-    "tool_input": { "owner": "kamoca", "repo": "app", "pullNumber": 2, "merge_method": "squash" },
+    "tool_input": { "owner": "acme", "repo": "app", "pullNumber": 2, "merge_method": "squash" },
     "deny": ["mr-no-squash"]
   },
   {
-    "description": "commit pela API do GitHub",
+    "description": "a commit through the GitHub API",
     "origin": "usage",
     "branch": "feat/x",
-    "prompt": "corrige o typo direto no GitHub",
+    "prompt": "fix the typo directly on GitHub",
     "tool_name": "mcp__github__create_or_update_file",
-    "tool_input": { "owner": "kamoca", "repo": "app", "path": "README.md", "branch": "fix/typo", "message": "fix typo", "content": "..." },
+    "tool_input": { "owner": "acme", "repo": "app", "path": "README.md", "branch": "fix/typo", "message": "fix typo", "content": "..." },
     "deny": ["no-api-commit"]
   }
 ]

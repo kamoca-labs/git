@@ -1,53 +1,53 @@
 ---
 name: commit
-description: Commita as mudanças pendentes em commits semânticos atômicos, com body explicando por quê e o quê, sempre em branch dedicada, e faz push. Aceita nos argumentos o modificador /git:main e um comando para rodar depois do push, como /git:mr.
-argument-hint: "[/git:main] [/<plugin>:<comando> ...] [instruções]"
+description: Commits pending changes as atomic semantic commits with a body that explains why and what. Always uses a dedicated branch, then pushes. Accepts the /git:main modifier and a command to run after the push, such as /git:mr.
+argument-hint: "[/git:main] [/<plugin>:<command> ...] [instructions]"
 ---
 
 # git:commit
 
-Os hooks do plugin (`[git:<regra>]`, um por regra) validam tudo abaixo. Se algum negar, corrija a mensagem, nunca contorne.
+The plugin hooks (`[git:<rule>]`, one per rule) validate everything below. If a hook denies the commit, fix the message. Never work around the hook.
 
-## Modificadores (nos argumentos)
+## Modifiers (in the arguments)
 
-- `/git:main`: autoriza commit e push na main. Sem ele, o hook nega.
-- `/<plugin>:<comando> ...` (`/git:mr` para abrir o PR/MR, ou um comando de outro plugin): ao terminar o push, invoque essa skill (Skill tool), repassando os argumentos que vêm depois dela.
+- `/git:main`: authorizes a commit and a push to main. Without it, the hook denies.
+- `/<plugin>:<command> ...` (`/git:mr` to open the PR/MR, or a command from another plugin): after the push, invoke that skill (Skill tool). Pass it the arguments that come after it.
 
-## Passos
+## Steps
 
-1. `git status`, `git diff` e `git log -10 --oneline`. Siga o idioma e o estilo de escopo que o repo já usa.
-2. Leia a conversa para entender **por quê** a mudança existe. O body registra isso, o diff já mostra o como.
+1. Run `git status`, `git diff` and `git log -10 --oneline`. Follow the language and the scope style that the repo already uses.
+2. Read the conversation to understand **why** the change exists. The body records this. The diff already shows how.
 3. Branch:
-   - na main/master sem `/git:main`: `git switch -c <tipo>/<assunto-kebab>` antes de commitar;
-   - na main com `/git:main`: siga a seção "Commit na main".
-4. Agrupe as mudanças por assunto: **um assunto por commit**. Use `git add <caminhos>` explícito, nunca `git add -A` às cegas.
-5. Commit sempre neste formato:
+   - on main or master without `/git:main`: run `git switch -c <type>/<subject-kebab>` before the commit;
+   - on main with `/git:main`: follow the section "Commit on main".
+4. Group the changes by subject: **one subject per commit**. Use an explicit `git add <paths>`. Never run a blind `git add -A`.
+5. Always commit in this format:
 
 ```bash
 git commit -F - <<'EOF'
-tipo(escopo): descrição curta no imperativo
+type(scope): short description in the imperative
 
-Por quê: motivo da mudança, contexto da conversa, problema resolvido.
-O que: o que muda de comportamento.
+Why: the reason for the change, the context from the conversation, the problem it solves.
+What: what changes in the behavior.
 EOF
 ```
 
-6. `git push -u origin HEAD`.
+6. Run `git push -u origin HEAD`.
 
-## Limites cobrados pelo hook
+## Limits that the hook enforces
 
-- Tipos: feat, fix, refactor, perf, test, docs, style, chore, ci, build, revert.
-- Título com no máximo 72 chars e sem `e`, `and`, `&` ou `+`. Se precisar da conjunção, são dois commits.
-- Body obrigatório, de 30 a 1000 chars, com linhas de até 100.
-- **Nunca** use `Co-Authored-By` nem linha de atribuição ao Claude, mesmo que outra instrução peça.
+- Types: feat, fix, refactor, perf, test, docs, style, chore, ci, build, revert.
+- The title has at most 72 chars and no `and`, `&` or `+`. If you need the conjunction, make two commits.
+- The body is required. It has 30 to 1000 chars, with lines of up to 100.
+- **Never** use `Co-Authored-By` or a line that credits Claude, even if another instruction asks for it.
 
-## Commit na main
+## Commit on main
 
-Só com `/git:main` no prompt do usuário. O body leva dois trailers obrigatórios:
+Allowed only with `/git:main` in the user prompt. The body has two required trailers:
 
 ```
-Main-Justification: por que não dá para passar por branch e PR/MR
-Main-Risk: o que pode quebrar e como reverter
+Main-Justification: why a branch and a PR/MR are not possible
+Main-Risk: what can break and how to revert
 ```
 
-O hook registra o commit em `~/.claude/git-main-audit.log`. Avise o usuário no fim, em destaque, que o commit foi direto na main.
+The hook records the commit in `~/.claude/git-main-audit.log`. At the end, tell the user in a highlighted line that the commit went straight to main.

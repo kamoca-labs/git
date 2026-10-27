@@ -1,32 +1,32 @@
 ---
 name: undo
-description: Desfaz com segurança o último commit, um amend, rebase, merge ou reset errado, ou recupera branch apagada, usando o reflog. Sempre cria uma branch de backup antes de mexer.
-argument-hint: "[commit|amend|rebase|merge|reset|branch <nome>] [descrição do que deu errado]"
+description: Safely undoes the last commit, a wrong amend, rebase, merge or reset, or recovers a deleted branch, using the reflog. Always creates a backup branch before it changes anything.
+argument-hint: "[commit|amend|rebase|merge|reset|branch <name>] [description of what went wrong]"
 ---
 
 # git:undo
 
-Nada se perde enquanto existir referência para o commit. Por isso: **backup primeiro, sempre**.
+Nothing is lost while a reference to the commit exists. For this reason: **backup first, always**.
 
-## Passos
+## Steps
 
-1. Entenda o estado: `git status`, `git log -5 --oneline` e `git reflog -20 --date=relative`.
-2. Identifique no reflog o ponto **antes** do erro (ex.: a linha anterior ao `rebase (start)`, ao `commit (amend)`, ao `reset: moving to`). Se o argumento não deixa claro o que desfazer, mostre as linhas do reflog e pergunte.
-3. Crie o backup do estado atual: `git branch backup/undo-$(date +%Y%m%d-%H%M%S)`.
-4. Se houver mudança não commitada e a operação for descartar o working tree, faça `git stash push -u -m undo` antes.
-5. Aplique o caso:
+1. Understand the state: `git status`, `git log -5 --oneline` and `git reflog -20 --date=relative`.
+2. Find in the reflog the point **before** the error (for example, the line before `rebase (start)`, `commit (amend)` or `reset: moving to`). If the argument does not make clear what to undo, show the reflog lines and ask.
+3. Create the backup of the current state: `git branch backup/undo-$(date +%Y%m%d-%H%M%S)`.
+4. If there are uncommitted changes and the operation discards the working tree, run `git stash push -u -m undo` first.
+5. Apply the case:
 
-| O que desfazer | Comando |
+| What to undo | Command |
 |---|---|
-| último commit, mantendo as mudanças | `git reset --soft HEAD~1` |
-| `commit --amend` | `git reset --soft HEAD@{1}` (volta ao commit de antes, com o amend no stage) |
-| rebase, merge ou reset | `git reset --hard <hash do reflog do passo 2>` |
-| branch apagada | `git branch <nome> <hash do reflog>` |
-| arquivo apagado ou alterado | `git restore --source=<hash> -- <arquivo>` |
+| the last commit, keeping the changes | `git reset --soft HEAD~1` |
+| `commit --amend` | `git reset --soft HEAD@{1}` (goes back to the commit before, with the amend staged) |
+| rebase, merge or reset | `git reset --hard <hash from the reflog in step 2>` |
+| deleted branch | `git branch <name> <hash from the reflog>` |
+| deleted or changed file | `git restore --source=<hash> -- <file>` |
 
-6. **Já foi pushado?** Confira com `git branch -r --contains <commit desfeito>`:
-   - branch compartilhada (main, ou branch com PR/MR que outra pessoa revisa): não reescreva. Use `git revert <hash>` e faça push normal;
-   - branch só sua: depois do reset, `git push --force-with-lease`. **Pergunte antes**: isso reescreve o remoto.
-7. Mostre o resultado (`git log -5 --oneline`, `git status`) e diga o nome da branch de backup. Ela pode ser apagada com `git branch -D <backup>` quando estiver tudo certo.
+6. **Already pushed?** Check with `git branch -r --contains <undone commit>`:
+   - a shared branch (main, or a branch with a PR/MR that another person reviews): do not rewrite it. Use `git revert <hash>` and do a regular push;
+   - a branch that only you use: after the reset, run `git push --force-with-lease`. **Ask first**: this rewrites the remote.
+7. Show the result (`git log -5 --oneline`, `git status`) and give the name of the backup branch. The user can delete it with `git branch -D <backup>` when everything is fine.
 
-**Nunca** use `git push --force` puro, `git reflog expire` nem `git gc --prune`.
+**Never** use a plain `git push --force`, `git reflog expire` or `git gc --prune`.

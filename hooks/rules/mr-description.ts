@@ -8,5 +8,5 @@ const isChecked = request && (request.isCreate || request.description !== undefi
 const length = (request?.description || '').trim().length
 
 if (isChecked && (length < DESCRIPTION_MIN || length > DESCRIPTION_MAX)) {
-  deny('mr-description', `Descrição do PR/MR obrigatória, de ${DESCRIPTION_MIN} a ${DESCRIPTION_MAX} chars (tem ${length}).`)
+  deny('mr-description', `PR/MR description required, from ${DESCRIPTION_MIN} to ${DESCRIPTION_MAX} chars (it has ${length}).`)
 }

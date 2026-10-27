@@ -3,18 +3,18 @@ import { allowed, BODY, denied, sandbox } from './helpers.ts'
 
 const RULE = 'semantic-title'
 
-test('aceita título semântico, com ou sem escopo', () => {
+test('accepts a semantic title, with or without a scope', () => {
   const { commit } = sandbox()
   allowed(commit(RULE, `feat(api): add endpoint\n\n${BODY}`))
   allowed(commit(RULE, `fix!: drop legacy flag\n\n${BODY}`))
 })
 
-test('nega título fora do padrão', () => {
-  denied(sandbox().commit(RULE, `add endpoint\n\n${BODY}`), /semântic/i)
+test('denies a title that does not follow the format', () => {
+  denied(sandbox().commit(RULE, `add endpoint\n\n${BODY}`), /semantic/i)
 })
 
-test('o git -C não esconde o commit da regra', () => {
+test('git -C does not hide the commit from the rule', () => {
   const { run } = sandbox()
-  denied(run(RULE, `git -C . commit -m "atualiza readme" -m "${BODY}"`), /semântic/i)
-  denied(run(RULE, `git -c core.hooksPath=/dev/null commit -m "atualiza readme" -m "${BODY}"`), /semântic/i)
+  denied(run(RULE, `git -C . commit -m "update readme" -m "${BODY}"`), /semantic/i)
+  denied(run(RULE, `git -c core.hooksPath=/dev/null commit -m "update readme" -m "${BODY}"`), /semantic/i)
 })

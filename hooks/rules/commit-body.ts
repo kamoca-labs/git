@@ -8,8 +8,8 @@ const message = commitMessage(readInput())
 
 if (message) {
   const { body } = message
-  if (body.length < BODY_MIN) deny('commit-body', `Body obrigatório (mín ${BODY_MIN} chars) explicando por quê e o quê.`)
-  if (body.length > BODY_MAX) deny('commit-body', `Body com ${body.length} chars, máximo ${BODY_MAX}.`)
+  if (body.length < BODY_MIN) deny('commit-body', `Body required (min ${BODY_MIN} chars). Explain why and what.`)
+  if (body.length > BODY_MAX) deny('commit-body', `Body has ${body.length} chars, maximum ${BODY_MAX}.`)
   const longLine = body.split('\n').find((line) => line.length > LINE_MAX)
-  if (longLine) deny('commit-body', `Linha do body acima de ${LINE_MAX} chars, quebre: "${longLine.slice(0, 40)}..."`)
+  if (longLine) deny('commit-body', `Body line above ${LINE_MAX} chars. Wrap it: "${longLine.slice(0, 40)}..."`)
 }

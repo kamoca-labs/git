@@ -14,5 +14,5 @@ function writtenText(): string {
 }
 
 if (AI_MENTION.test(writtenText().replace(INLINE_CODE, ''))) {
-  deny('mr-no-ai', 'PR/MR sem menção a IA. Remova do título e da descrição: Co-Authored-By, "Generated with", emoji de robô, link de sessão e nome de IA (Claude, ChatGPT, Copilot...). Arquivo ou caminho entre crases pode ficar.')
+  deny('mr-no-ai', 'PR/MR text must not mention AI. Remove from the title and the description: Co-Authored-By, "Generated with", the robot emoji, session links and AI names (Claude, ChatGPT, Copilot...). A file or path in backticks can stay.')
 }

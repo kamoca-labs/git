@@ -1,15 +1,15 @@
 ---
 name: main
-description: Autoriza, de forma explícita e auditada, commit e push direto na main. Só vale combinado com /git:commit, exige justificativa e riscos no body.
-argument-hint: "/git:commit [instruções]"
+description: Authorizes a direct commit and push to main, explicitly and with an audit record. It works only together with /git:commit and needs a justification and the risks in the body.
+argument-hint: "/git:commit [instructions]"
 disable-model-invocation: true
 ---
 
 # git:main
 
-Esta skill só autoriza. Quem executa é o `/git:commit`.
+This skill only authorizes. The `/git:commit` skill does the work.
 
-- **Com `/git:commit` nos argumentos**: invoque a skill `git:commit` (Skill tool), seção "Commit na main".
-- **Sozinho**: não faça nada. Explique que o uso é `/git:commit /git:main` ou `/git:main /git:commit`.
+- **With `/git:commit` in the arguments**: invoke the `git:commit` skill (Skill tool), section "Commit on main".
+- **Alone**: do nothing. Explain that the usage is `/git:commit /git:main` or `/git:main /git:commit`.
 
-`/git:main` no prompt já é a autorização: escreva a justificativa e o risco no body e commite sem pedir confirmação. Os hooks `protected-branch-commit` e `protected-branch-push` só liberam a main quando `/git:main` está no prompt digitado e o body traz `Main-Justification:` e `Main-Risk:`. O hook `main-audit` registra cada commit liberado em `~/.claude/git-main-audit.log`.
+`/git:main` in the prompt is already the authorization. Write the justification and the risk in the body. Commit without a confirmation request. The `protected-branch-commit` and `protected-branch-push` hooks allow main only when `/git:main` is in the prompt the user typed and the body has `Main-Justification:` and `Main-Risk:`. The `main-audit` hook records each allowed commit in `~/.claude/git-main-audit.log`.
