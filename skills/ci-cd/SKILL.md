@@ -1,10 +1,10 @@
 ---
-name: cicd
+name: ci-cd
 description: Creates or fixes the pipeline of the project on GitLab CI or GitHub Actions. The PR/MR runs the automated tests and the image build before the merge. The merge does not run the tests again, because they already passed on the same tree. The deploy uses the image of the commit SHA. Use when asked for a pipeline, CI/CD, tests before the merge, skipping the tests on the merge, or a deploy by SHA.
 argument-hint: "[gitlab|github]"
 ---
 
-# git:cicd
+# git:ci-cd
 
 ## The flow
 
