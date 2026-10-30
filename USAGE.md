@@ -95,6 +95,15 @@ Claude reads the diff, the discussions and the context that you pass. It shows t
 
 One line per failed job: the cause, the log excerpt that proves the cause and the fix. `retry` runs again only when all failures are intermittent.
 
+## Set up the pipeline
+
+```
+/git:cicd
+/git:cicd github
+```
+
+Claude reads the project (stacks, tests, `docker/`, runners, registry) and shows a plan. It waits for your approval. Then it writes the pipeline: the PR/MR runs the tests of the stacks that changed and builds the image. On the merge, a `check-tested` job compares the tree of the merge commit with the tree of the PR/MR. If they are equal and that pipeline passed, the tests do not run again. The deploy uses the image of the commit SHA. With your approval, Claude also sets the project to accept the merge only with a green pipeline. Claude does not register secrets: it tells you the variable name and where to set it.
+
 ## Write the daily
 
 ```

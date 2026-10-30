@@ -1,0 +1,115 @@
+stages:
+  - test
+  - build
+  - deploy
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - when: never
+
+variables:
+  REGISTRY: $CI_REGISTRY_IMAGE
+  IMAGE_TAG: $CI_COMMIT_SHA
+  DEPLOY_TARGET:
+    description: "Target of a manual deploy. It only works in a pipeline started from the UI."
+    value: "Staging"
+    options:
+      - "Staging"
+      - "Production"
+
+check-tested:
+  stage: .pre
+  tags: [<deploy-runner-tag>]
+  script:
+    - sh .gitlab/check-tested.sh
+  artifacts:
+    reports:
+      dotenv: tested.env
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+# One test job for each stack. Copy this job and change the folder, the image and the commands.
+test-<stack>:
+  stage: test
+  needs:
+    - job: check-tested
+      optional: true
+      artifacts: true
+  tags: [<test-runner-tag>]
+  image: <image-of-the-stack>
+  before_script:
+    - '[ "${SKIP_TESTS:-0}" != 1 ] || { echo "Tests already passed on this tree"; exit 0; }'
+    - cd <stack-folder>
+    - <install-the-dependencies>
+  script:
+    - <run-the-tests-with-a-junit-report>
+  artifacts:
+    when: always
+    reports:
+      junit: <stack-folder>/junit.xml
+  retry:
+    max: 2
+    when: runner_system_failure
+  rules:
+    - changes:
+        - <stack-folder>/**/*
+        - .gitlab-ci.yml
+
+# Take the build job from the docker:ci template. Keep these rules and this needs.
+build:
+  stage: build
+  needs: []
+  tags: [<build-runner-tag>]
+  variables:
+    # the build uses no secret: dummy value for each ${VAR:?...} in compose.prod.yaml
+    DB_PASSWORD: no-secret-at-build
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
+    - sh docker/build.sh
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - docker/**/*
+        - compose*.yaml
+        - .gitlab-ci.yml
+
+.deploy:
+  stage: deploy
+  tags: [<deploy-runner-tag>]
+  needs:
+    - build
+    - job: test-<stack>
+      optional: true
+  variables:
+    DEPLOY_PATH: <path-on-the-server>
+    REGISTRY_HOST: $CI_REGISTRY
+    REGISTRY_USER: $CI_REGISTRY_USER
+    REGISTRY_TOKEN: $CI_REGISTRY_PASSWORD
+  script:
+    - sh docker/deploy.sh "$CI_COMMIT_SHA"
+
+deploy-staging:
+  extends: .deploy
+  variables:
+    DEPLOY_HOST: <user>@<staging-server>
+  resource_group: staging
+  environment:
+    name: staging
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "web" && $DEPLOY_TARGET == "Staging"
+
+deploy-production:
+  extends: .deploy
+  variables:
+    DEPLOY_HOST: <user>@<production-server>
+  resource_group: production
+  environment:
+    name: production
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web" && $DEPLOY_TARGET == "Production"

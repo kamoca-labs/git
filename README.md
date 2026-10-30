@@ -31,6 +31,7 @@ Semantic, atomic and explained commits, always on a dedicated branch. A PR/MR ha
 | `/git:mr` | `[@reviewer ...\|@auto] [draft] [target:<branch>] [instructions]` | Opens the PR/MR on GitHub or GitLab through the forge MCP, or through the CLI (`gh`, `glab`) when there is no MCP. Semantic title, a description with **Why** and **What changes**, reviewers given or suggested from the history (`@auto`), draft and target. If the branch already has a PR/MR, it updates that PR/MR |
 | `/git:review` | `[<link\|PR/MR number>] [approve] [context]` | Reviews the PR/MR of another person from the link, the number or your review queue. Shows the findings for confirmation and publishes them in a single review, with inline comments |
 | `/git:ci` | `[<link\|PR/MR number\|pipeline id>] [retry] [context]` | Diagnoses GitHub Actions or GitLab CI: reads the log of the failed jobs, finds the cause and proposes the fix. With `retry`, it runs only the intermittent failures again |
+| `/git:cicd` | `[gitlab\|github]` | Creates or fixes the pipeline: the PR/MR runs the tests and the image build, the merge skips the tests that already passed on the same tree, and the deploy uses the image of the commit SHA. Gates the merge on a green pipeline |
 | `/git:daily` | `[since:yesterday\|YYYY-MM-DD] [repos folder]` | Collects the commits of all local repos and the PR/MR from GitHub and GitLab since the last business day, and writes the daily (yesterday, today, blockers) in your language |
 | `/git:release` | `[major\|minor\|patch\|vX.Y.Z] [rc]` | Calculates the version from the semantic commits, writes the changelog, and creates the annotated tag and the release on the forge. Claude cannot invoke it by itself |
 | `/git:main` | `/git:commit [...]` | It only authorizes. Claude cannot invoke it by itself (`disable-model-invocation`) |
@@ -88,6 +89,7 @@ git log --grep 'Main-Risk:'
 | `skills/forge/SKILL.md` | forge, project and tool (MCP, CLI or a request to the user), shared by the forge commands |
 | `skills/review/SKILL.md` | PR/MR review with a confirmation before it publishes |
 | `skills/ci/SKILL.md` | CI diagnosis and retry of intermittent failures |
+| `skills/cicd/SKILL.md` | pipeline flow: tests and build in the PR/MR, no repeated tests on the merge, deploy by SHA. It has the templates of GitLab CI and GitHub Actions, and the `check-tested` scripts |
 | `skills/daily/SKILL.md` | collection of commits and PR/MR, and the daily text |
 | `skills/release/SKILL.md` | version, changelog, tag and release |
 | `skills/sync/SKILL.md` | goes back to the default branch after the merge and cleans the branches |
