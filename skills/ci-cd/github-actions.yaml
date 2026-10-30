@@ -1,0 +1,92 @@
+name: pipeline
+
+on:
+  pull_request:
+  push:
+    branches: [<default-branch>]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Target of the manual deploy
+        type: choice
+        options: [staging, production]
+        default: staging
+
+env:
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  check-tested:
+    if: github.event_name == 'push'
+    runs-on: <deploy-runner>
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      skip: ${{ steps.check.outputs.skip }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - id: check
+        run: sh .github/check-tested.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  # One test job for each stack. Copy this job and change the folder, the setup and the commands.
+  test-<stack>:
+    needs: check-tested
+    if: ${{ !cancelled() && needs.check-tested.outputs.skip != 'true' }}
+    runs-on: <test-runner>
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: changed
+        with:
+          filters: |
+            stack:
+              - '<stack-folder>/**'
+              - '.github/workflows/pipeline.yml'
+      - if: steps.changed.outputs.stack == 'true'
+        working-directory: <stack-folder>
+        run: |
+          <install-the-dependencies>
+          <run-the-tests-with-a-junit-report>
+
+  # Take the build job from the docker:ci template. Keep this needs and this if.
+  build:
+    runs-on: <build-runner>
+    permissions:
+      contents: read
+      packages: write
+    env:
+      # the build uses no secret: dummy value for each ${VAR:?...} in compose.prod.yaml
+      DB_PASSWORD: no-secret-at-build
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "REGISTRY=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+      - run: echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: sh docker/build.sh
+
+  deploy:
+    needs: [build, test-<stack>]
+    if: ${{ !cancelled() && !failure() && ((github.event_name == 'push') || (github.event_name == 'workflow_dispatch')) }}
+    runs-on: <deploy-runner>
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.target || 'staging' }}
+    concurrency:
+      group: deploy-${{ github.event_name == 'workflow_dispatch' && inputs.target || 'staging' }}
+      cancel-in-progress: false
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "REGISTRY=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+      - run: sh docker/deploy.sh "$GITHUB_SHA"
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+          REGISTRY_HOST: ghcr.io
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
