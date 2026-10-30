@@ -1,6 +1,6 @@
 {
   "name": "git",
-  "description": "/git:commit, /git:mr, /git:review, /git:ci, /git:daily, /git:release, /git:main, /git:sync, /git:split and /git:undo. The plugin uses the forge MCP (GitHub or GitLab) when it exists, and the CLI when it does not. Hooks validate the message, the branch and the push. For a PR/MR (CLI or MCP), hooks validate the title, the description, the squash option and any AI mention.",
-  "version": "0.6.0",
+  "description": "/git:commit, /git:mr, /git:review, /git:ci, /git:cicd, /git:daily, /git:release, /git:main, /git:sync, /git:split and /git:undo. The plugin uses the forge MCP (GitHub or GitLab) when it exists, and the CLI when it does not. Hooks validate the message, the branch and the push. For a PR/MR (CLI or MCP), hooks validate the title, the description, the squash option and any AI mention.",
+  "version": "0.7.0",
   "author": { "name": "kamoca" }
 }
