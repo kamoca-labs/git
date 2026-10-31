@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./assets/icon.png" alt="Git plugin blueprint icon" width="180">
+</p>
+
 # `git` plugin
 
 ## Contents
