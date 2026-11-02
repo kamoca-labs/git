@@ -13,6 +13,7 @@
 - [Commit on main](#commit-on-main)
 - [Files](#files)
 - [Use cases](USAGE.md)
+- [Release notes](CHANGELOG.md)
 
 ## Installation
 
