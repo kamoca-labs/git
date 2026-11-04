@@ -20,7 +20,7 @@ The plugin hooks (`[git:<rule>]`, one per rule) validate everything below. If a 
 3. Branch:
    - on main or master without `/git:main`: run `git switch -c <type>/<subject-kebab>` before the commit;
    - on main with `/git:main`: follow the section "Commit on main".
-4. Group the changes by subject: **one subject per commit**. Use an explicit `git add <paths>`. Never run a blind `git add -A`.
+4. Group the changes by subject: **one subject per commit**. A structural change and a behavior change are two subjects (see "Structural versus behavior"). Use an explicit `git add <paths>`. Never run a blind `git add -A`.
 5. Always commit in this format:
 
 ```bash
@@ -33,6 +33,21 @@ EOF
 ```
 
 6. Run `git push -u origin HEAD`.
+
+## Structural versus behavior
+
+Never mix a structural change and a behavior change in the same commit. The semantic commit type shows which one it is:
+
+| Change | Type |
+|---|---|
+| Structural: the behavior does not change (rename, move, extract, speed) | `refactor`, `perf` |
+| Behavior | `feat`, `fix` |
+
+When the work has both, commit them in this order:
+
+1. The structural change that makes the behavior change easy.
+2. The behavior change.
+3. The structural change that cleans up after the behavior change.
 
 ## Limits that the hook enforces
 
