@@ -2,6 +2,12 @@
 
 Notes reconstructed from commits and manifest versions. Historical dates identify recorded version changes rather than previously published tags. Later refinements at the same manifest version are included with that version. Empty categories are omitted.
 
+## 0.8.0 (2026-11-04)
+
+### New features
+
+- `/git:commit` keeps a structural change (`refactor`, `perf`) and a behavior change (`feat`, `fix`) in separate commits, in this order: preparatory refactor, behavior, cleanup refactor. This rule moved here from `craft:atdd`.
+
 ## 0.7.0 — 2026-10-30
 
 ### New features
