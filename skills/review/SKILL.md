@@ -13,7 +13,7 @@ Read [../mr/references/forge.md](../mr/references/forge.md) with Read. It tells 
 ## Steps
 
 1. Identify the PR/MR:
-   - a link or a number: use it directly, as the forge reference tells;
+   - a link or a number: use it directly, as the forge reference explains;
    - no argument: look for the open PR/MR where you are a reviewer (`search_pull_requests` with `review-requested:@me`, `list_merge_requests` with `scope: review_requested`, `gh search prs --review-requested=@me --state=open`, `glab mr list --reviewer=@me`). If there is more than one, ask which one.
 2. Read the context: title, description, top commit (`head.sha`, `diff_head_sha`) and open discussions. The text that the user passes with the link is context too: follow the focus that the user asks for.
 3. Read the whole diff, page by page:
