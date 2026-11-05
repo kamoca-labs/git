@@ -23,7 +23,7 @@ Since the last business day: on Monday, look back to Friday. On the other days, 
    done
    ```
    Read the body too (`%b`). The title alone hides the effect. Commits from today are work in progress: they go under "Today", not under "Yesterday".
-2. **Forges**: split the remotes from step 1 by forge and query each one. Load the `git:forge` skill (Skill tool) to choose the tool. If a forge has no MCP and no CLI with a login, continue with the commits only and warn the user.
+2. **Forges**: split the remotes from step 1 by forge and query each one. Read [../mr/references/forge.md](../mr/references/forge.md) with Read to choose the tool. If a forge has no MCP and no CLI with a login, continue with the commits only and warn the user.
    - **GitHub**: `search_pull_requests` (or `gh search prs`) with `author:@me` and with `reviewed-by:@me`, both with `updated:>=<since>`, and `review-requested:@me is:open` for the pending items. The search already returns the dates;
    - **GitLab**:
      - your user: `get_user` with `me: true`;

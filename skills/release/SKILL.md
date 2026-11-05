@@ -44,7 +44,7 @@ disable-model-invocation: true
    EOF
    git push origin refs/tags/vX.Y.Z
    ```
-8. Create the release on the forge. Load the `git:forge` skill (Skill tool) to find the forge and the tool:
+8. Create the release on the forge. Read [../mr/references/forge.md](../mr/references/forge.md) with Read to find the forge and the tool:
    - GitHub: `gh release create vX.Y.Z --notes-file <changelog>` (with `--prerelease` for rc);
    - GitLab: `create_release` through the MCP, or `glab release create vX.Y.Z --notes-file <changelog>`;
    - no tool: ask the user for permission to install the CLI. Then install it, and check that it works. If it cannot work (for example, a login that needs a browser), hand the user the link to create the release by hand (`<repo url>/releases/new?tag=vX.Y.Z` on GitHub, `<project url>/-/releases/new?tag_name=vX.Y.Z` on GitLab) and the changelog to paste.

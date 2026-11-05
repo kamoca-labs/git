@@ -8,7 +8,7 @@ argument-hint: "[<link|PR/MR number|pipeline id>] [retry] [context]"
 
 ## Tool
 
-Load the `git:forge` skill (Skill tool). It tells you how to find the forge and the project from the link or the origin, and which tool to use.
+Read [../mr/references/forge.md](../mr/references/forge.md) with Read. It tells you how to find the forge and the project from the link or the origin, and which tool to use.
 
 On GitHub, the pipeline is the Actions **workflow run**. On GitLab, it is the **pipeline**. The text below uses "pipeline" for both.
 

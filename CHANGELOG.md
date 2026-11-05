@@ -2,6 +2,18 @@
 
 Notes reconstructed from commits and manifest versions. Historical dates identify recorded version changes rather than previously published tags. Later refinements at the same manifest version are included with that version. Empty categories are omitted.
 
+## Unreleased
+
+### Improvements
+
+- Claude sees fewer skills and shorter descriptions. The listing drops from 10 skills with 2,719 description characters to 9 skills with 2,120. The descriptions of `/git:mr`, `/git:ci-cd` and `/git:review` have 300 characters or fewer.
+- `scripts/skill-budget.ts` prints the skills that Claude sees and the sum of their description characters.
+- The structure test guards the skill layout: the visible skills, the description length and the links to each reference.
+
+### Breaking changes
+
+- `git:forge` is no longer a skill. Its text moved to `skills/mr/references/forge.md`. The forge commands read this file with Read.
+
 ## 0.8.0 (2026-11-04)
 
 ### New features

@@ -1,6 +1,6 @@
 ---
 name: ci-cd
-description: Creates or fixes the pipeline of the project on GitLab CI or GitHub Actions. The PR/MR runs the automated tests and the image build before the merge. The merge does not run the tests again, because they already passed on the same tree. The deploy uses the image of the commit SHA. Use when asked for a pipeline, CI/CD, tests before the merge, skipping the tests on the merge, or a deploy by SHA.
+description: Creates or fixes the project pipeline on GitLab CI or GitHub Actions. The PR/MR runs the tests and the image build. The merge does not run them again on the same tree. The deploy uses the image of the commit SHA. Use when asked for a pipeline, CI/CD, tests before the merge or a deploy by SHA.
 argument-hint: "[gitlab|github]"
 ---
 
@@ -24,12 +24,12 @@ The pipeline has three stages. Each one has one job in the flow.
 
 ## Tool
 
-Load the `git:forge` skill (Skill tool). It tells you how to find the forge and the project, and which tool to use.
+Read [../mr/references/forge.md](../mr/references/forge.md) with Read. It tells you how to find the forge and the project, and which tool to use.
 
 ## Steps
 
 1. **Probe the project.** Read what exists before you write anything:
-   - the forge and the default branch (`git:forge`);
+   - the forge and the default branch (the forge reference);
    - the current pipeline (`.gitlab-ci.yml` or `.github/workflows/*.yml`);
    - the test command of each stack, from `package.json`, `composer.json`, `Makefile` or the docs (a test, `lint`, `typecheck` and `build` script);
    - a `docker/` folder and a `compose.prod.yaml`;

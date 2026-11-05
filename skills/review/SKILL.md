@@ -1,6 +1,6 @@
 ---
 name: review
-description: Reviews the PR/MR of another person on GitHub or GitLab, from a link, a number or the PR/MR where you are a reviewer. Reads the diff, the discussions and the context from the user. Finds bugs and design problems (with craft). Shows the findings for confirmation, then publishes them as inline comments in a single review.
+description: Reviews the PR/MR of another person on GitHub or GitLab, from a link, a number or a review request. Finds bugs and design problems, shows the findings for confirmation, then publishes them as inline comments in one review. Use when asked to review a PR or MR.
 argument-hint: "[<link|PR/MR number>] [approve] [context]"
 ---
 
@@ -8,12 +8,12 @@ argument-hint: "[<link|PR/MR number>] [approve] [context]"
 
 ## Tool
 
-Load the `git:forge` skill (Skill tool). It tells you how to find the forge and the PR/MR from the link or the number, and which tool to use.
+Read [../mr/references/forge.md](../mr/references/forge.md) with Read. It tells you how to find the forge and the PR/MR from the link or the number, and which tool to use.
 
 ## Steps
 
 1. Identify the PR/MR:
-   - a link or a number: use it directly, through `git:forge`;
+   - a link or a number: use it directly, as the forge reference tells;
    - no argument: look for the open PR/MR where you are a reviewer (`search_pull_requests` with `review-requested:@me`, `list_merge_requests` with `scope: review_requested`, `gh search prs --review-requested=@me --state=open`, `glab mr list --reviewer=@me`). If there is more than one, ask which one.
 2. Read the context: title, description, top commit (`head.sha`, `diff_head_sha`) and open discussions. The text that the user passes with the link is context too: follow the focus that the user asks for.
 3. Read the whole diff, page by page:

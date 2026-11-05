@@ -49,7 +49,7 @@ It makes the commits and the push. Then it invokes the command from the other pl
 /git:commit /git:mr @auto
 ```
 
-Claude opens the PR/MR of the branch on GitHub or GitLab, according to the `origin`. If the session has the forge MCP, Claude uses the MCP. If it does not, Claude uses the CLI (`gh` or `glab`).
+Claude opens the PR/MR of the branch on GitHub or GitLab, according to the `origin`. If the session has the forge MCP, Claude uses the MCP. If it does not, Claude uses the CLI (`gh` or `glab`). The rules for this choice are in `skills/mr/references/forge.md`. The commands that talk to the forge read this file.
 
 The title follows the commit. The description has two required sections and two optional ones:
 

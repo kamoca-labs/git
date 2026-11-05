@@ -1,10 +1,6 @@
----
-name: forge
-description: How to find the forge (GitHub or GitLab) and the PR/MR, the pipeline or the project from a link, a number or the origin, and which tool to use (forge MCP, gh/glab CLI or a request to the user). Used by git:mr, git:review, git:ci, git:daily and git:release. Load it before you talk to the forge.
-user-invocable: false
----
+# Forge
 
-# git:forge
+How to find the forge (GitHub or GitLab), the project and the PR/MR, and which tool to use.
 
 ## Forge
 

@@ -1,6 +1,6 @@
 ---
 name: mr
-description: Opens or updates the PR/MR of the current branch on GitHub or GitLab. Uses the forge MCP when it exists and the CLI (gh, glab) when it does not. Semantic title, a description with why and what changes, reviewers given or suggested from the history, draft and target branch. Never squash, never an AI mention. Use it when asked to open a PR, MR, pull request or merge request, or when /git:mr comes in the arguments of another command.
+description: Opens or updates the PR/MR of the current branch on GitHub or GitLab, with a semantic title, the why and what changes, reviewers, draft and target branch. Never squashes. Use when asked to open a PR, MR, pull request or merge request, or when /git:mr comes in the arguments of another command.
 argument-hint: "[@reviewer ...|@auto] [draft] [target:<branch>] [instructions]"
 ---
 
@@ -18,7 +18,7 @@ The plugin hooks (`[git:<rule>]`, one per rule) validate the title, the descript
 
 ## Tool
 
-Load the `git:forge` skill (Skill tool). It tells you how to find the forge and the project, and which tool to use: MCP, CLI or a request to the user.
+Read [references/forge.md](references/forge.md) with Read. It tells you how to find the forge and the project, and which tool to use: MCP, CLI or a request to the user.
 
 ## Steps
 
