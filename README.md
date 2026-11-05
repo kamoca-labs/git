@@ -44,7 +44,7 @@ Semantic, atomic and explained commits, always on a dedicated branch. A PR/MR ha
 | `/git:split` | `[branch] [/<plugin>:<command> ...]` | Splits the branch into chained branches, one per subject, and checks that the sum reproduces the original. The original stays untouched |
 | `/git:undo` | `[commit\|amend\|rebase\|merge\|reset\|branch <name>]` | Undoes through the reflog, with a backup branch first. On a shared branch it uses `revert` |
 
-The commands that talk to the forge load the `git:forge` sub-skill. It finds the forge and the project from the link or the `origin`, and chooses the tool for each operation: the forge MCP when it exists, the CLI (`gh`, `glab`) when it does not, or a request that the user authenticates.
+The commands that talk to the forge read the reference `skills/mr/references/forge.md`. It finds the forge and the project from the link or the `origin`, and chooses the tool for each operation: the forge MCP when it exists, the CLI (`gh`, `glab`) when it does not, or a request that the user authenticates.
 
 ## Rules
 
@@ -91,7 +91,7 @@ git log --grep 'Main-Risk:'
 | `skills/commit/SKILL.md` | steps and format of the commit |
 | `skills/main/SKILL.md` | authorization for main |
 | `skills/mr/SKILL.md` | steps, format and commands of the PR/MR |
-| `skills/forge/SKILL.md` | forge, project and tool (MCP, CLI or a request to the user), shared by the forge commands |
+| `skills/mr/references/forge.md` | forge, project and tool (MCP, CLI or a request to the user), shared by the forge commands. It is a reference, not a skill, so it adds nothing to the skill listing |
 | `skills/review/SKILL.md` | PR/MR review with a confirmation before it publishes |
 | `skills/ci/SKILL.md` | CI diagnosis and retry of intermittent failures |
 | `skills/ci-cd/SKILL.md` | pipeline flow: tests and build in the PR/MR, no repeated tests on the merge, deploy by SHA. It has the templates of GitLab CI and GitHub Actions, and the `check-tested` scripts |
@@ -107,6 +107,7 @@ git log --grep 'Main-Risk:'
 | `hooks/tests/cases.json` | end-to-end use cases: each one passes through **all** hooks and declares which rules deny |
 | `hooks/tests/cases.test.ts` | runs `cases.json` against `hooks.json` |
 | `hooks/tests/capture.test.ts` | checks that a real denial becomes a case in `~/.claude/hook-cases.jsonl` |
-| `hooks/tests/structure.test.ts` | checks that every rule has a dedicated hook and its own test |
+| `hooks/tests/structure.test.ts` | checks that every rule has a dedicated hook and its own test. It also guards the skill layout: only the entry skills are visible to Claude, each description has 300 characters or fewer, and each reference is linked from a `SKILL.md` |
+| `scripts/skill-budget.ts` | prints the skills that Claude sees and the sum of their description characters. Run: `node scripts/skill-budget.ts` |
 
 Run: `node --test 'hooks/tests/*.test.ts'`. The steps to turn a real case into a test are in the [repo USAGE](https://github.com/kamoca-labs/marketplace/blob/main/USAGE.md#turn-a-real-case-into-a-test).
