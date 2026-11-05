@@ -2,7 +2,7 @@
 
 Notes reconstructed from commits and manifest versions. Historical dates identify recorded version changes rather than previously published tags. Later refinements at the same manifest version are included with that version. Empty categories are omitted.
 
-## Unreleased
+## 0.9.0 (2026-11-05)
 
 ### Improvements
 
