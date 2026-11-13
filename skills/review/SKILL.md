@@ -1,6 +1,6 @@
 ---
 name: review
-description: Reviews the PR/MR of another person on GitHub or GitLab, from a link, a number or a review request. Finds bugs and design problems, shows the findings for confirmation, then publishes them as inline comments in one review. Use when asked to review a PR or MR.
+description: Reviews the PR/MR of another person on GitHub or GitLab, from a link, a number or a review request. Finds bugs and design problems, shows them for confirmation, then publishes one review with inline comments. Use when asked to review a PR/MR. Not for the user's own local changes.
 argument-hint: "[<link|PR/MR number>] [approve] [context]"
 ---
 
