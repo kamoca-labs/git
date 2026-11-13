@@ -41,6 +41,11 @@ test('only the entry skills are visible to Claude', () => {
   assert.deepStrictEqual(visible, ENTRY)
 })
 
+test('the skills that merge, tag or authorize main are user-only', () => {
+  const hidden = skills.filter((skill) => /^disable-model-invocation: true$/m.test(skillText(skill)))
+  assert.deepStrictEqual(hidden, ['main', 'publish', 'release'])
+})
+
 test('no skill uses user-invocable: false without disable-model-invocation: true', () => {
   const wrong = skills.filter((skill) => /^user-invocable: false$/m.test(skillText(skill)) && !/^disable-model-invocation: true$/m.test(skillText(skill)))
   assert.deepStrictEqual(wrong, [])
