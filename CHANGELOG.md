@@ -2,6 +2,16 @@
 
 Notes reconstructed from commits and manifest versions. Historical dates identify recorded version changes rather than previously published tags. Later refinements at the same manifest version are included with that version. Empty categories are omitted.
 
+## 0.10.0 (2026-11-13)
+
+### New features
+
+- `/git:publish [auto|manual]` takes the work from the commit to the default branch: it opens the PR/MR, merges without squash, syncs and creates the new tag when it applies. `manual` asks one question before the merge. `auto` merges when the checks are green. After the publish, Claude continues with the open work. Claude cannot invoke it by itself.
+
+### Improvements
+
+- Sharper trigger descriptions for `/git:ci`, `/git:review` and `/git:daily`, with the "Use when" case.
+
 ## 0.9.0 (2026-11-05)
 
 ### Improvements
