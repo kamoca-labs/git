@@ -1,6 +1,6 @@
 ---
 name: daily
-description: Collects what you did since the last business day (commits in all local repos, and PR/MR opened, merged and reviewed on GitHub and GitLab). Writes short talking points for the daily standup in the format yesterday, today and blockers, in the user's language.
+description: Writes talking points for the daily standup (yesterday, today, blockers) from commits in all local repos and PR/MR opened, merged and reviewed on GitHub and GitLab since the last business day. Use when asked for the daily, the standup or what was done yesterday.
 argument-hint: "[since:yesterday|YYYY-MM-DD] [repos folder]"
 ---
 

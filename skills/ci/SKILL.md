@@ -1,6 +1,6 @@
 ---
 name: ci
-description: Diagnoses the CI of the current branch, of a PR/MR or of a pipeline link, on GitHub Actions or GitLab CI. Reads the log of the failed jobs, finds the cause and proposes the fix. With retry, it runs the jobs again when the failure is intermittent.
+description: Diagnoses a failing CI on GitHub Actions or GitLab CI, for the current branch, a PR/MR or a pipeline link. Reads the failed job logs, finds the cause and proposes the fix. With retry, reruns intermittent failures. Use when CI, a pipeline or a build is red or failing.
 argument-hint: "[<link|PR/MR number|pipeline id>] [retry] [context]"
 ---
 

@@ -9,6 +9,7 @@
 - [Diagnose the CI](#diagnose-the-ci)
 - [Write the daily](#write-the-daily)
 - [Release a version](#release-a-version)
+- [Publish in one command](#publish-in-one-command)
 - [Give extra instructions](#give-extra-instructions)
 - [Hotfix directly on main](#hotfix-directly-on-main)
 - [When the hook denies](#when-the-hook-denies)
@@ -121,6 +122,22 @@ Claude collects your commits from all repos in `~/Development` and the PR/MR fro
 ```
 
 Claude calculates the version from the commits, shows the changelog and waits for your approval. Then it creates the annotated tag, pushes only the tag and creates the release on the forge.
+
+## Publish in one command
+
+```
+/git:publish
+/git:publish auto
+/git:publish manual @auto
+/git:publish auto notag
+```
+
+Claude commits what is pending, opens the PR/MR, merges it without squash, goes back to the updated default branch and, when it applies, creates the tag and the release. Then it continues with the work that was open.
+
+- `manual` (the default) stops after it opens the PR/MR and asks one question: merge now? If the repo gets a tag, the question shows the version and the changelog. You only accept or decline. On "no", the PR/MR stays open, and `/git:publish` again resumes.
+- `auto` asks nothing. It waits for the checks (up to 15 minutes) and merges when they are green. A failed check stops the publish and Claude diagnoses it with `/git:ci`.
+
+The tag applies only when the repo already has a tag and the commits since it have a `feat`, a `fix`, a `perf` or a breaking change. `notag` cancels it. If the repo has a `CHANGELOG.md`, the entry goes in the PR/MR, and the tag comes after the merge. A required approval or a branch protection still holds: Claude stops and says what is missing.
 
 ## Give extra instructions
 

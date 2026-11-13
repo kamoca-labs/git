@@ -39,6 +39,7 @@ Semantic, atomic and explained commits, always on a dedicated branch. A PR/MR ha
 | `/git:ci-cd` | `[gitlab\|github]` | Creates or fixes the pipeline: the PR/MR runs the tests and the image build, the merge skips the tests that already passed on the same tree, and the deploy uses the image of the commit SHA. Gates the merge on a green pipeline |
 | `/git:daily` | `[since:yesterday\|YYYY-MM-DD] [repos folder]` | Collects the commits of all local repos and the PR/MR from GitHub and GitLab since the last business day, and writes the daily (yesterday, today, blockers) in your language |
 | `/git:release` | `[major\|minor\|patch\|vX.Y.Z] [rc]` | Calculates the version from the semantic commits, writes the changelog, and creates the annotated tag and the release on the forge. Claude cannot invoke it by itself |
+| `/git:publish` | `[auto\|manual] [notag] [major\|minor\|patch] [@reviewer ...\|@auto] [instructions]` | Commits, opens the PR/MR, merges without squash, syncs, creates the new tag when it applies (the repo already uses tags and the commits have a `feat`, `fix`, `perf` or breaking change) and goes back to the open work. `manual` (default) asks one question before the merge. `auto` merges when the checks are green. Claude cannot invoke it by itself |
 | `/git:main` | `/git:commit [...]` | It only authorizes. Claude cannot invoke it by itself (`disable-model-invocation`) |
 | `/git:sync` | `[branch]` | Merged: goes back to the updated default branch and deletes the local one with `-d`. Not merged: stays on it and runs `pull`. Cleans other branches that are already merged |
 | `/git:split` | `[branch] [/<plugin>:<command> ...]` | Splits the branch into chained branches, one per subject, and checks that the sum reproduces the original. The original stays untouched |
@@ -97,6 +98,7 @@ git log --grep 'Main-Risk:'
 | `skills/ci-cd/SKILL.md` | pipeline flow: tests and build in the PR/MR, no repeated tests on the merge, deploy by SHA. It has the templates of GitLab CI and GitHub Actions, and the `check-tested` scripts |
 | `skills/daily/SKILL.md` | collection of commits and PR/MR, and the daily text |
 | `skills/release/SKILL.md` | version, changelog, tag and release |
+| `skills/publish/SKILL.md` | commit, PR/MR, merge, sync and tag in one command, in `manual` or `auto` mode |
 | `skills/sync/SKILL.md` | goes back to the default branch after the merge and cleans the branches |
 | `skills/split/SKILL.md` | splits the branch into chained parts |
 | `skills/undo/SKILL.md` | recovery through the reflog, case by case |
