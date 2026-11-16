@@ -61,6 +61,7 @@ The rules run on `git commit`, on `git push` and on PR/MR writes that Claude mak
 | `no-co-author` | commit | no `Co-Authored-By` and no "Generated with Claude" | a co-author trailer |
 | `protected-branch-commit` | commit | on `main`/`master`, only with `/git:main` and the trailers | a commit on main without authorization |
 | `protected-branch-push` | push | a push to `main`/`master` only with `/git:main`; a tag-only push (`refs/tags/...`) passes | `git push origin HEAD:main` |
+| `no-force-branch-delete` | branch delete | only `git branch -d`: git refuses a branch with a commit outside the default branch, and then Claude stops | `git branch -D feat/old` |
 | `mr-no-ai` | PR/MR | the title and the description have no `Co-Authored-By`, "Generated with", 🤖, session link or AI name (Claude, Anthropic, OpenAI, ChatGPT, GPT, Copilot, Gemini, Codex, DeepSeek); a file in backticks (`CLAUDE.md`) passes. It applies to `gh pr create\|edit\|comment\|review` and `glab mr create\|update\|note` | `Generated with [Claude Code]` at the end of the description |
 | `mr-semantic-title` | PR/MR | a title in the semantic format; the `Draft: ` prefix does not count | `tweak upload` |
 | `mr-title-length` | PR/MR | up to 72 chars, not counting `Draft: ` | a title with 80 chars |

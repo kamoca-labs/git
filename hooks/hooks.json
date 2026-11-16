@@ -59,6 +59,12 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/protected-branch-push.ts\"",
             "timeout": 10,
             "statusMessage": "git:protected-branch-push: push to main"
+          },
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rules/no-force-branch-delete.ts\"",
+            "timeout": 10,
+            "statusMessage": "git:no-force-branch-delete: delete with -d"
           }
         ]
       },

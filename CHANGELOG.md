@@ -2,6 +2,12 @@
 
 Notes reconstructed from commits and manifest versions. Historical dates identify recorded version changes rather than previously published tags. Later refinements at the same manifest version are included with that version. Empty categories are omitted.
 
+## 0.11.0 (2026-11-16)
+
+### New features
+
+- The `no-force-branch-delete` rule denies `git branch -D` and `-d -f`. A branch is deleted with `-d`, which git refuses when the branch has a commit outside the default branch. This keeps `/git:sync` from deleting unmerged work.
+
 ## 0.10.0 (2026-11-13)
 
 ### New features
