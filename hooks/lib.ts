@@ -97,6 +97,11 @@ export function runsGit(command: string, subcommand: string): boolean {
   return new RegExp(`\\bgit\\s+${GIT_GLOBAL_OPTIONS}${subcommand}\\b`).test(withoutHeredoc(command))
 }
 
+export function gitArguments(command: string, subcommand: string): string[][] {
+  const pattern = new RegExp(`\\bgit\\s+${GIT_GLOBAL_OPTIONS}${subcommand}\\b([^\\n;&|]*)`, 'g')
+  return [...withoutHeredoc(command).matchAll(pattern)].map((match) => match[1].split(/\s+/).filter(Boolean))
+}
+
 export function isCommit({ tool_input }: HookInput): boolean {
   return runsGit(tool_input.command || '', 'commit')
 }

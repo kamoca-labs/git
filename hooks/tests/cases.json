@@ -178,5 +178,23 @@
     "tool_name": "mcp__github__create_or_update_file",
     "tool_input": { "owner": "acme", "repo": "app", "path": "README.md", "branch": "fix/typo", "message": "fix typo", "content": "..." },
     "deny": ["no-api-commit"]
+  },
+  {
+    "description": "a force delete of a merged branch during the sync",
+    "origin": "real",
+    "branch": "main",
+    "prompt": "/git:sync",
+    "tool_name": "Bash",
+    "tool_input": { "command": "git branch -D -- v1.0.0" },
+    "deny": ["no-force-branch-delete"]
+  },
+  {
+    "description": "a safe delete of a merged branch during the sync",
+    "origin": "usage",
+    "branch": "main",
+    "prompt": "/git:sync",
+    "tool_name": "Bash",
+    "tool_input": { "command": "git branch -d feat/grill" },
+    "deny": []
   }
 ]
